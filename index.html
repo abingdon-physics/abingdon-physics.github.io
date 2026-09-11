@@ -1850,7 +1850,7 @@
     <div id="siPrefixControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
 
         <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 15px;">
-            <div id="siPrefixMasteredDisplay" style="margin: 0; flex: 1; text-align: center; font-size: 1em;">Mastered: 0 / 24</div>
+            <div id="siPrefixMasteredDisplay" style="margin: 0; flex: 1; text-align: center; font-size: 1em;">Mastered: 0 / 18</div>
             <button class="btn-reset" onclick="siPrefixRestart()">🔄 Restart</button>
         </div>
 
@@ -1865,7 +1865,7 @@
             </div>
         </div>
 
-        <div id="siPrefixInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Complete all 24 questions to unlock time submission.</div>
+        <div id="siPrefixInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Complete all 18 questions to unlock time submission.</div>
 
     </div>
 </div>
@@ -14169,7 +14169,7 @@ function hideAllInputGroups() {
 // SI PREFIX GAME (Module 1: Circuit Basics)
 //*****************************************************************************************
 // Data: each SI prefix has 3 "representations" - name, symbol, and power of ten.
-// The game runs 24 questions total: one for each (prefix x representation) combo,
+// The game runs 18 questions total: one for each (prefix x representation) combo,
 // shuffled. Each question shows ONE representation as the prompt; the player must
 // find and click all 3 matching cards among the 16 shown (the other 13 are
 // distractors from the other 7 prefixes).
@@ -14178,21 +14178,19 @@ function hideAllInputGroups() {
 // requeued to reappear later in the game (at most once), so every prefix still
 // gets mastered by the end, just with a bit of spaced repetition for the tricky ones.
 const SI_PREFIX_LIST = [
-    { name: "tera",  symbol: "T", power: "10¹²" },
     { name: "giga",  symbol: "G", power: "10⁹" },
     { name: "mega",  symbol: "M", power: "10⁶" },
     { name: "kilo",  symbol: "k", power: "10³" },
+    { name: "centi", symbol: "c", power: "10⁻²" },
     { name: "milli", symbol: "m", power: "10⁻³" },
-    { name: "micro", symbol: "μ", power: "10⁻⁶" },
-    { name: "nano",  symbol: "n", power: "10⁻⁹" },
-    { name: "pico",  symbol: "p", power: "10⁻¹²" }
+    { name: "micro", symbol: "μ", power: "10⁻⁶" }
 ];
 
 const SI_PREFIX_TYPES = ['name', 'symbol', 'power'];
 const SI_PREFIX_BEST_KEY = "abingdonElectronics_siPrefixBestTime";
-const SI_PREFIX_GRID_SIZE = 16;
+const SI_PREFIX_GRID_SIZE = 12;
 const SI_PREFIX_CARDS_PER_PREFIX = 3;
-const SI_PREFIX_TOTAL_UNIQUE = SI_PREFIX_LIST.length * SI_PREFIX_TYPES.length; // 24
+const SI_PREFIX_TOTAL_UNIQUE = SI_PREFIX_LIST.length * SI_PREFIX_TYPES.length; // 18
 const SI_PREFIX_MAX_RECYCLES = 1; // a question can be requeued at most once
 
 let siPrefixState = {
@@ -14242,7 +14240,7 @@ function siPrefixUpdateMasteredDisplay() {
 }
 
 function siPrefixStartNewGame() {
-    // Build the full set of 24 (prefix x representation) questions and shuffle it
+    // Build the full set of 18 (prefix x representation) questions and shuffle it
     const allQuestions = [];
     SI_PREFIX_LIST.forEach((prefix, prefixIndex) => {
         SI_PREFIX_TYPES.forEach(promptType => {
