@@ -517,6 +517,16 @@
         transform: scale(0.96);
     }
 
+    .btn-submit:disabled {
+        background-color: #cfe8e7;
+        color: #7fa9a7;
+        cursor: not-allowed;
+        transform: none;
+    }
+    .btn-submit:disabled:hover {
+        background-color: #cfe8e7;
+    }
+
     /* Data Sheet Button */
     .btn-datasheet {
         background-color: #ffffff; 
@@ -827,6 +837,79 @@
         border-color: #dc3545;
         color: #721c24;
     }
+
+    /* ===== STANDARD FORM LEVELS (fill-in-the-blank grid) ===== */
+    .sf-question-cell {
+        background-color: #fff;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 14px 6px 20px 6px;
+        text-align: center;
+        font-size: 0.95em;
+    }
+    .sf-question-cell.sf-correct {
+        background-color: #d4edda;
+        border-color: #28a745;
+    }
+    .sf-question-cell.sf-incorrect {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+    }
+    .sf-question-cell.sf-case-warning {
+        background-color: #fff3cd;
+        border-color: #fd7e14;
+    }
+    /* Rearranging Equations uses a plain table-row look instead of bordered cards -
+       just a thin bottom border carrying the correctness colour, so many rows can sit
+       directly underneath each other without visual weight piling up. */
+    .rearranging-row {
+        padding: 7px 4px;
+        border-bottom: 2px solid #e5e5e5;
+    }
+    .rearranging-row.sf-correct {
+        background-color: #f2faf3;
+        border-bottom-color: #28a745;
+    }
+    .rearranging-row.sf-incorrect {
+        background-color: #fdf4f5;
+        border-bottom-color: #dc3545;
+    }
+    .rearranging-row.sf-case-warning {
+        background-color: #fffbf0;
+        border-bottom-color: #fd7e14;
+    }
+    .sf-q-display {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 14px;
+        min-height: 1.4em;
+    }
+    .sf-answer-input {
+        border: 1px solid #adb5bd;
+        border-radius: 4px;
+        padding: 4px 2px;
+        font-size: 1em;
+        text-align: center;
+        font-family: inherit;
+    }
+    .sf-answer-input:disabled {
+        background-color: #eef7ef;
+        color: #155724;
+        border-color: #28a745;
+    }
+    .sf-mantissa-input { width: 44px; }
+    .sf-exp-input { width: 32px; position: relative; top: -10px; font-size: 0.78em; margin-left: 1px; }
+    .sf-ordinary-input { width: 110px; }
+    .sf-feedback-icon {
+        display: inline-block;
+        margin-left: 4px;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    @media (max-width: 480px) {
+        .sf-question-cell { font-size: 0.8em !important; padding: 8px 3px; }
+        .sf-ordinary-input { width: 85px; }
+    }
 </style>
 </head>
 
@@ -837,7 +920,7 @@
 </div>
 
 <div id="mainMenu" class="tabs">
-    <button class="tab" onclick="safeOpenModule('basics')">1. Basics</button>
+    <button class="tab" onclick="safeOpenModule('basics')">1. Physics Maths</button>
     <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
     <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
     <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
@@ -849,10 +932,10 @@
 
 <div id="menuBasics" class="tabs" style="display:none;">
     <button class="tab" id="tab-siprefix" onclick="safeSwitchTab('siprefix')">SI Prefix</button>
-    <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
-    <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
-    <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
-    <button class="tab" onclick="safeOpenModule('comingsoon')">Coming Soon</button>
+    <button class="tab" id="tab-standardform" onclick="safeSwitchTab('standardform')">Standard Form</button>
+    <button class="tab" id="tab-conversions" onclick="safeSwitchTab('conversions')">Conversions</button>
+    <button class="tab" id="tab-prefixpowers" onclick="safeSwitchTab('prefixpowers')">Prefix Powers</button>
+    <button class="tab" id="tab-rearranging" onclick="safeSwitchTab('rearranging')">Rearranging</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
@@ -976,6 +1059,71 @@
                 </div>
 
                 <div id="siPrefixGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 480px; margin: 0 auto;"></div>
+
+            </div>
+
+            <!--==========================================
+                STANDARD FORM LEVELS (Module 1: Physics Maths)
+                Lives in the same left-panel slot as the
+                circuit canvas / SI Prefix game.
+                ========================================== -->
+            <div id="standardFormGameContainer" class="circuit-container" style="display:none; width: 100%; box-sizing: border-box;">
+
+                <div id="standardFormTimerDisplay" style="font-size: 1.2em; font-weight: bold; color: #E64097; text-align:center; margin-bottom: 10px;">Time: 0.0s</div>
+
+                <div id="standardFormPromptBox" style="text-align:center; margin-bottom: 14px;">
+                    <div style="font-size: 0.95em; color: #666;">Fill in every box, then press Check. Get them all correct to unlock the next level.</div>
+                </div>
+
+                <div id="standardFormLevelGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 560px; margin: 0 auto;"></div>
+
+            </div>
+
+            <!--==========================================
+                CONVERSIONS LEVELS (Module 1: Physics Maths)
+                Lives in the same left-panel slot.
+                ========================================== -->
+            <div id="conversionsGameContainer" class="circuit-container" style="display:none; width: 100%; box-sizing: border-box;">
+
+                <div id="conversionsTimerDisplay" style="font-size: 1.2em; font-weight: bold; color: #E64097; text-align:center; margin-bottom: 10px;">Time: 0.0s</div>
+
+                <div id="conversionsPromptBox" style="text-align:center; margin-bottom: 14px;">
+                    <div style="font-size: 0.95em; color: #666;">Fill in every box, then press Check. Get them all correct to unlock the next level.</div>
+                </div>
+
+                <div id="conversionsLevelGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 560px; margin: 0 auto;"></div>
+
+            </div>
+
+            <!--==========================================
+                PREFIX POWERS (Module 1: Physics Maths)
+                Lives in the same left-panel slot.
+                ========================================== -->
+            <div id="prefixPowersGameContainer" class="circuit-container" style="display:none; width: 100%; box-sizing: border-box;">
+
+                <div id="prefixPowersTimerDisplay" style="font-size: 1.2em; font-weight: bold; color: #E64097; text-align:center; margin-bottom: 10px;">Time: 0.0s</div>
+
+                <div id="prefixPowersPromptBox" style="text-align:center; margin-bottom: 14px;">
+                    <div style="font-size: 0.95em; color: #666;">Each equation is missing a <b>unit symbol</b> (not a number) - work out which one makes it true, e.g. kg, mA, MW. Fill in every box, then press Check.</div>
+                </div>
+
+                <div id="prefixPowersLevelGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 720px; margin: 0 auto;"></div>
+
+            </div>
+
+            <!--==========================================
+                REARRANGING EQUATIONS (Module 1: Physics Maths)
+                Lives in the same left-panel slot.
+                ========================================== -->
+            <div id="rearrangingGameContainer" class="circuit-container" style="display:none; width: 100%; box-sizing: border-box;">
+
+                <div id="rearrangingTimerDisplay" style="font-size: 1.2em; font-weight: bold; color: #E64097; text-align:center; margin-bottom: 10px;">Time: 0.0s</div>
+
+                <div id="rearrangingPromptBox" style="text-align:center; margin-bottom: 14px;">
+                    <div style="font-size: 0.95em; color: #666;">Rearrange each equation to make the given letter the subject. Use * for multiply (e.g. m*g), / for divide (e.g. F/m), ^ for powers (e.g. v^2), and type "pi" for &pi;. <b>Capital letters matter</b> - answers are case-sensitive.</div>
+                </div>
+
+                <div id="rearrangingLevelGrid" style="display: grid; grid-template-columns: 1fr; gap: 6px; width: 100%; max-width: 720px; margin: 0 auto;"></div>
 
             </div>
 
@@ -1849,23 +1997,172 @@
     <!-- SI PREFIX GAME: controls panel (mirrors quiz-section above, shown instead of it while in siprefix mode) -->
     <div id="siPrefixControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
 
-        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 15px;">
-            <div id="siPrefixMasteredDisplay" style="margin: 0; flex: 1; text-align: center; font-size: 1em;">Mastered: 0 / 18</div>
-            <button class="btn-reset" onclick="siPrefixRestart()">🔄 Restart</button>
-        </div>
+        <h3 style="color:#E64097; margin: 0 0 12px 0; text-align: center;">SI Prefix</h3>
 
-        <div id="siPrefixBestDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 15px;">Best: --</div>
-
-        <div id="siPrefixResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
-            <h3 style="margin: 0 0 8px 0; color: #E64097;">🎉 All 24 Questions Mastered!</h3>
-            <p id="siPrefixResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                <button class="btn-submit" onclick="openSubmissionModal()">⬇️ Submit Time</button>
-                <button class="btn-reset" onclick="siPrefixRestart()">▶️ Play Again</button>
+        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 12px;">
+            <button class="btn-datasheet" onclick="openDataSheet()" style="flex:1;">📖 Data Sheet</button>
+            <div style="display: flex; gap: 10px; flex: 2;">
+                <button class="btn-reset" onclick="siPrefixRestart()">🔄 Reset</button>
+                <button id="siPrefixSubmitBtn" class="btn-submit" onclick="openSubmissionModal()" disabled>⬇️ Submit</button>
             </div>
         </div>
 
+        <div id="siPrefixMasteredDisplay" style="text-align: center; font-size: 1em; font-weight:bold; margin-bottom: 8px;">Mastered: 0 / 18</div>
+
+        <div id="siPrefixBestDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 12px;">Best: --</div>
+
+        <div id="siPrefixResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
+            <h3 style="margin: 0 0 8px 0; color: #E64097;">🎉 All 18 Questions Mastered!</h3>
+            <p id="siPrefixResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
+        </div>
+
         <div id="siPrefixInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Complete all 18 questions to unlock time submission.</div>
+
+    </div>
+
+    <!-- STANDARD FORM MEMORY GAME: controls panel -->
+    <div id="standardFormControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
+
+        <h3 style="color:#E64097; margin: 0 0 12px 0; text-align: center;">Standard Form</h3>
+
+        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 12px;">
+            <button class="btn-datasheet" onclick="openDataSheet()" style="flex:1;">📖 Data Sheet</button>
+            <div style="display: flex; gap: 10px; flex: 2;">
+                <button class="btn-reset" onclick="standardFormRestart()">🔄 Reset</button>
+                <button id="standardFormSubmitBtn" class="btn-submit" onclick="openSubmissionModal()" disabled>⬇️ Submit</button>
+            </div>
+        </div>
+
+        <div id="standardFormLevelDisplay" style="text-align: center; font-size: 1em; font-weight:bold; margin-bottom: 8px;">Level 1 of 4</div>
+
+        <div id="standardFormScoreDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 8px;">Levels passed: 0 / 4</div>
+        <div id="standardFormAttemptsDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 8px;">Attempts this level: 0  |  Total attempts: 0</div>
+        <div id="standardFormBestDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 12px;">Best: --</div>
+
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button id="standardFormCheckBtn" class="btn-submit" onclick="standardFormCheckLevel()" disabled>✅ Check</button>
+        </div>
+
+        <div id="standardFormResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
+            <h3 id="standardFormResultHeading" style="margin: 0 0 8px 0; color: #E64097;">🎉 Level Passed!</h3>
+            <p id="standardFormResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="standardFormNextBtn" class="btn-reset" onclick="standardFormNextLevel()">▶️ Next Level</button>
+            </div>
+        </div>
+
+        <div id="standardFormInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Fill in every box above. The Check button unlocks once all boxes have something in them.</div>
+
+    </div>
+
+    <!-- CONVERSIONS: controls panel -->
+    <div id="conversionsControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
+
+        <h3 style="color:#E64097; margin: 0 0 12px 0; text-align: center;">Conversions</h3>
+
+        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 8px;">
+            <button class="btn-datasheet" onclick="openDataSheet()" style="flex:1;">📖 Data Sheet</button>
+            <div style="display: flex; gap: 10px; flex: 2;">
+                <button class="btn-reset" onclick="conversionsRestart()">🔄 Reset</button>
+                <button id="conversionsSubmitBtn" class="btn-submit" onclick="openSubmissionModal()" disabled>⬇️ Submit</button>
+            </div>
+        </div>
+
+        <div id="conversionsLevelDisplay" style="text-align: center; font-size: 1em; font-weight:bold; margin-bottom: 8px;">Level 1 of 4</div>
+
+        <div id="conversionsLevelTitleDisplay" style="text-align:center; font-size:0.85em; color:#888; margin-bottom: 12px;">Converting to standard Physics units</div>
+
+        <div id="conversionsScoreDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 8px;">Levels passed: 0 / 4</div>
+        <div id="conversionsAttemptsDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 8px;">Attempts this level: 0  |  Total attempts: 0</div>
+        <div id="conversionsBestDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 12px;">Best: --</div>
+
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button id="conversionsCheckBtn" class="btn-submit" onclick="conversionsCheckLevel()" disabled>✅ Check</button>
+        </div>
+
+        <div id="conversionsResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
+            <h3 id="conversionsResultHeading" style="margin: 0 0 8px 0; color: #E64097;">🎉 Level Passed!</h3>
+            <p id="conversionsResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="conversionsNextBtn" class="btn-reset" onclick="conversionsNextLevel()">▶️ Next Level</button>
+            </div>
+        </div>
+
+        <div id="conversionsInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Fill in every box above. The Check button unlocks once all boxes have something in them.</div>
+
+    </div>
+
+    <!-- PREFIX POWERS: controls panel -->
+    <div id="prefixPowersControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
+
+        <h3 style="color:#E64097; margin: 0 0 12px 0; text-align: center;">Prefix Powers</h3>
+
+        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 8px;">
+            <button class="btn-datasheet" onclick="openDataSheet()" style="flex:1;">📖 Data Sheet</button>
+            <div style="display: flex; gap: 10px; flex: 2;">
+                <button class="btn-reset" onclick="prefixPowersRestart()">🔄 Reset</button>
+                <button id="prefixPowersSubmitBtn" class="btn-submit" onclick="openSubmissionModal()" disabled>⬇️ Submit</button>
+            </div>
+        </div>
+
+        <div id="prefixPowersLevelDisplay" style="text-align: center; font-size: 1em; font-weight:bold; margin-bottom: 8px;">Level 1 of 3</div>
+
+        <div id="prefixPowersLevelTitleDisplay" style="text-align:center; font-size:0.85em; color:#888; margin-bottom: 12px;">Powers of 10 to the power 3</div>
+
+        <div id="prefixPowersScoreDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 8px;">Levels passed: 0 / 3</div>
+        <div id="prefixPowersAttemptsDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 8px;">Attempts this level: 0  |  Total attempts: 0</div>
+        <div id="prefixPowersBestDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 12px;">Best: --</div>
+
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button id="prefixPowersCheckBtn" class="btn-submit" onclick="prefixPowersCheckLevel()" disabled>✅ Check</button>
+        </div>
+
+        <div id="prefixPowersResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
+            <h3 id="prefixPowersResultHeading" style="margin: 0 0 8px 0; color: #E64097;">🎉 Level Passed!</h3>
+            <p id="prefixPowersResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="prefixPowersNextBtn" class="btn-reset" onclick="prefixPowersNextLevel()">▶️ Next Level</button>
+            </div>
+        </div>
+
+        <div id="prefixPowersInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Type a unit symbol (not a number) in each box - e.g. kg, mA, MW. The Check button unlocks once every box has something in it.</div>
+
+    </div>
+
+    <!-- REARRANGING EQUATIONS: controls panel -->
+    <div id="rearrangingControls" style="display:none; flex-direction: column; height: auto; box-sizing: border-box; padding: 15px;">
+
+        <h3 style="color:#E64097; margin: 0 0 12px 0; text-align: center;">Rearranging Equations</h3>
+
+        <div style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 8px;">
+            <button class="btn-datasheet" onclick="openDataSheet()" style="flex:1;">📖 Data Sheet</button>
+            <div style="display: flex; gap: 10px; flex: 2;">
+                <button class="btn-reset" onclick="rearrangingRestart()">🔄 Reset</button>
+                <button id="rearrangingSubmitBtn" class="btn-submit" onclick="openSubmissionModal()" disabled>⬇️ Submit</button>
+            </div>
+        </div>
+
+        <div id="rearrangingLevelDisplay" style="text-align: center; font-size: 1em; font-weight:bold; margin-bottom: 8px;">Level 1 of 3</div>
+
+        <div id="rearrangingLevelTitleDisplay" style="text-align:center; font-size:0.85em; color:#888; margin-bottom: 12px;">Simple rearranging (3 variables)</div>
+
+        <div id="rearrangingScoreDisplay" style="text-align:center; font-size: 1em; color: #555; margin-bottom: 8px;">Levels passed: 0 / 3</div>
+        <div id="rearrangingAttemptsDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 8px;">Attempts this level: 0  |  Total attempts: 0</div>
+        <div id="rearrangingBestDisplay" style="text-align:center; font-size: 0.9em; color: #777; margin-bottom: 12px;">Best: --</div>
+
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button id="rearrangingCheckBtn" class="btn-submit" onclick="rearrangingCheckLevel()" disabled>✅ Check</button>
+        </div>
+
+        <div id="rearrangingResultBox" style="display:none; text-align:center; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 6px;">
+            <h3 id="rearrangingResultHeading" style="margin: 0 0 8px 0; color: #E64097;">🎉 Level Passed!</h3>
+            <p id="rearrangingResultText" style="margin: 0 0 15px 0; font-size: 1.05em; color: #333;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="rearrangingNextBtn" class="btn-reset" onclick="rearrangingNextLevel()">▶️ Next Level</button>
+            </div>
+        </div>
+
+        <div id="rearrangingInProgressNote" style="text-align:center; color:#888; font-size:0.9em;">Use * for multiply (e.g. m*g), / for divide (e.g. F/m), ^ for powers (e.g. v^2), and type "pi" for the &pi; symbol. <b>Capital letters matter</b> - the Check button unlocks once every box has something in it.</div>
 
     </div>
 </div>
@@ -1890,9 +2187,14 @@
             <label for="teacherSelect">Your Teacher:</label>
             <select id="teacherSelect">
                 <option value="">-- Select Your Teacher --</option>
-                <option value="Mr. Magee">Mr. Magee</option>
+                <option value="Mrs. Abbott">Mrs. Abbott</option>
                 <option value="Mr. Brooks">Mr. Brooks</option>
+                <option value="Mr. Hack">Mr. Hack</option>
+                <option value="Mr. James">Mr. James</option>
+                <option value="Mr. Magee">Mr. Magee</option>
                 <option value="Mr. Mason">Mr. Mason</option>
+                <option value="Ms Perry">Ms Perry</option>
+                <option value="Mr. Pruciak">Mr. Pruciak</option>
                 <option value="Mr. Willoughby">Mr. Willoughby</option>
             </select>
         </div>
@@ -1906,66 +2208,89 @@
 <!-- Data Sheet Modal -->
 <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(3px); font-family: Arial, sans-serif;">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px; border-radius: 12px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.4); color: #333; line-height: 1.6;">
-        
+
         <button onclick="closeDataSheet()" aria-label="Close" style="position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold; background: none; border: none; padding: 0; line-height: 1;">&times;</button>
 
-        <h2 style="text-align: center; color: #E64097; margin-top: 0;">Information Sheet</h2>
-        <p style="text-align: center; font-style: italic;">This information may be of use in answering the questions.</p>
+        <h2 style="text-align: center; color: #E64097; margin-top: 0;">IGCSE Physics Equation Sheet</h2>
+        <p style="text-align: center; font-style: italic; font-size: 0.9em; color: #666;">Based on the Pearson Edexcel International GCSE Physics (4PH1) equation list.</p>
 
-        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px;">Resistor Colour Codes</h3>
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-            <table style="width: 45%; border-collapse: collapse; text-align: left; min-width: 200px;">
-                <tr><th style="padding: 4px; border-bottom: 1px solid #ccc;">Colour</th><th style="padding: 4px; border-bottom: 1px solid #ccc;">Value</th></tr>
-                <tr><td style="padding: 4px;">Black</td><td style="padding: 4px;">0</td></tr>
-                <tr><td style="padding: 4px;">Brown</td><td style="padding: 4px;">1</td></tr>
-                <tr><td style="padding: 4px;">Red</td><td style="padding: 4px;">2</td></tr>
-                <tr><td style="padding: 4px;">Orange</td><td style="padding: 4px;">3</td></tr>
-                <tr><td style="padding: 4px;">Yellow</td><td style="padding: 4px;">4</td></tr>
-            </table>
-            <table style="width: 45%; border-collapse: collapse; text-align: left; min-width: 200px;">
-                <tr><th style="padding: 4px; border-bottom: 1px solid #ccc;">Colour</th><th style="padding: 4px; border-bottom: 1px solid #ccc;">Value</th></tr>
-                <tr><td style="padding: 4px;">Green</td><td style="padding: 4px;">5</td></tr>
-                <tr><td style="padding: 4px;">Blue</td><td style="padding: 4px;">6</td></tr>
-                <tr><td style="padding: 4px;">Violet</td><td style="padding: 4px;">7</td></tr>
-                <tr><td style="padding: 4px;">Grey</td><td style="padding: 4px;">8</td></tr>
-                <tr><td style="padding: 4px;">White</td><td style="padding: 4px;">9</td></tr>
-            </table>
-        </div>
-
-        <p style="margin-top: 15px;"><strong>The fourth band colour gives the tolerance as follows:</strong></p>
-        <ul style="margin-top: 5px;">
-            <li><strong>GOLD:</strong> &plusmn; 5%</li>
-            <li><strong>SILVER:</strong> &plusmn; 10%</li>
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px;">1. Forces and Motion</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">average speed = distance moved &divide; time taken</li>
+            <li style="margin-bottom: 10px;">acceleration = change in velocity &divide; time taken</li>
+            <li style="margin-bottom: 10px;">(final speed)<sup>2</sup> = (initial speed)<sup>2</sup> + (2 &times; acceleration &times; distance moved)</li>
+            <li style="margin-bottom: 10px;">force = mass &times; acceleration &nbsp;&nbsp; F = m &times; a</li>
+            <li style="margin-bottom: 10px;">weight = mass &times; gravitational field strength &nbsp;&nbsp; W = m &times; g</li>
         </ul>
 
-        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">Resistors E24 Series Values</h3>
-        <p>10, 11, 12, 13, 15, 16, 18, 20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 62, 68, 75, 82, 91.</p>
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">2. Electricity</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">power = current &times; voltage &nbsp;&nbsp; P = I &times; V</li>
+            <li style="margin-bottom: 10px;">energy transferred = current &times; voltage &times; time &nbsp;&nbsp; E = I &times; V &times; t</li>
+            <li style="margin-bottom: 10px;">voltage = current &times; resistance &nbsp;&nbsp; V = I &times; R</li>
+            <li style="margin-bottom: 10px;">charge = current &times; time &nbsp;&nbsp; Q = I &times; t</li>
+            <li style="margin-bottom: 10px;">energy transferred = charge &times; voltage &nbsp;&nbsp; E = Q &times; V</li>
+        </ul>
 
-        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">Useful Equations</h3>
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; font-size: 18px;">
-            <ul style="list-style-type: none; padding: 0; width: 45%; min-width: 250px;">
-                <li style="margin-bottom: 15px;">P = V<sup>2</sup> / R</li>
-                <li style="margin-bottom: 15px;">V<sub>OUT</sub> = [R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)] V<sub>IN</sub></li>
-                <li style="margin-bottom: 15px;">I<sub>D</sub> = g<sub>M</sub>(V<sub>GS</sub> - 3)</li>
-                <li style="margin-bottom: 15px;">I<sub>C</sub> = h<sub>FE</sub>I<sub>B</sub></li>
-                <li style="margin-bottom: 15px;"><span style="text-decoration: overline;">A + B</span> = <span style="text-decoration: overline;">A</span> . <span style="text-decoration: overline;">B</span></li>
-                <li style="margin-bottom: 15px;"><span style="text-decoration: overline;">A . B</span> = <span style="text-decoration: overline;">A</span> + <span style="text-decoration: overline;">B</span></li>
-                <li style="margin-bottom: 15px;">G = V<sub>OUT</sub> / V<sub>IN</sub></li>
-            </ul>
-            <ul style="list-style-type: none; padding: 0; width: 45%; min-width: 250px;">
-                <li style="margin-bottom: 15px;">G = 1 + (R<sub>F</sub> / R<sub>1</sub>)</li>
-                <li style="margin-bottom: 15px;">G = -(R<sub>F</sub> / R<sub>IN</sub>)</li>
-                <li style="margin-bottom: 15px;">V<sub>OUT</sub> = -R<sub>F</sub>(V<sub>1</sub>/R<sub>1</sub> + V<sub>2</sub>/R<sub>2</sub> + ...)</li>
-                <li style="margin-bottom: 15px;">T = 1.1RC</li>
-                <li style="margin-bottom: 15px;">f = 1 / T</li>
-                <li style="margin-bottom: 15px;">f = 1.44 / [(R<sub>1</sub> + 2R<sub>2</sub>)C]</li>
-                <li style="margin-bottom: 15px;">T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></li>
-            </ul>
-        </div>
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">3. Waves</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">wave speed = frequency &times; wavelength &nbsp;&nbsp; v = f &times; &lambda;</li>
+            <li style="margin-bottom: 10px;">frequency = 1 &divide; time period &nbsp;&nbsp; f = 1/T</li>
+            <li style="margin-bottom: 10px;">refractive index = sin(angle of incidence) &divide; sin(angle of refraction) &nbsp;&nbsp; n = sin i / sin r</li>
+            <li style="margin-bottom: 10px;">refractive index = 1 &divide; sin(critical angle) &nbsp;&nbsp; n = 1/sin c</li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">4. Energy Resources and Energy Transfers</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">efficiency = (useful energy output &divide; total energy output) &times; 100%</li>
+            <li style="margin-bottom: 10px;">work done = force &times; distance moved &nbsp;&nbsp; W = F &times; d</li>
+            <li style="margin-bottom: 10px;">gravitational potential energy = mass &times; gravitational field strength &times; height &nbsp;&nbsp; GPE = m &times; g &times; h</li>
+            <li style="margin-bottom: 10px;">kinetic energy = &frac12; &times; mass &times; speed<sup>2</sup> &nbsp;&nbsp; KE = &frac12; m v<sup>2</sup></li>
+            <li style="margin-bottom: 10px;">power = work done &divide; time taken &nbsp;&nbsp; P = W/t</li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">5. Solids, Liquids and Gases</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">density = mass &divide; volume &nbsp;&nbsp; &rho; = m/V</li>
+            <li style="margin-bottom: 10px;">pressure = force &divide; area &nbsp;&nbsp; p = F/A</li>
+            <li style="margin-bottom: 10px;">pressure difference = height &times; density &times; gravitational field strength &nbsp;&nbsp; p = h &times; &rho; &times; g</li>
+            <li style="margin-bottom: 10px;">pressure &divide; temperature = constant &nbsp;&nbsp; p<sub>1</sub>/T<sub>1</sub> = p<sub>2</sub>/T<sub>2</sub></li>
+            <li style="margin-bottom: 10px;">pressure &times; volume = constant &nbsp;&nbsp; p<sub>1</sub>V<sub>1</sub> = p<sub>2</sub>V<sub>2</sub></li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #E64097; padding-bottom: 5px; margin-top: 25px;">8. Astrophysics</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">orbital speed = (2 &times; &pi; &times; orbital radius) &divide; time period &nbsp;&nbsp; v = 2&pi;r/T</li>
+        </ul>
+
+        <p style="margin-top: 25px; font-size: 0.85em; color: #888; font-style: italic;">The equations above are needed for all Physics (4PH1) and Combined Science (4SD0) papers. The equations below are needed for Physics papers 2P and 2PR only.</p>
+
+        <h3 style="border-bottom: 2px solid #999; padding-bottom: 5px; margin-top: 20px; color: #666;">Physics-only: Forces and Motion</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">momentum = mass &times; velocity &nbsp;&nbsp; p = m &times; v</li>
+            <li style="margin-bottom: 10px;">force = change in momentum &divide; time taken</li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #999; padding-bottom: 5px; margin-top: 20px; color: #666;">Physics-only: Solids, Liquids and Gases</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">change in thermal energy = mass &times; specific heat capacity &times; change in temperature &nbsp;&nbsp; &Delta;Q = m &times; c &times; &Delta;T</li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #999; padding-bottom: 5px; margin-top: 20px; color: #666;">Physics-only: Magnetism and Electromagnetism</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">input (primary) voltage &divide; output (secondary) voltage = primary turns &divide; secondary turns</li>
+            <li style="margin-bottom: 10px;">for 100% efficiency: input power = output power &nbsp;&nbsp; V<sub>p</sub>I<sub>p</sub> = V<sub>s</sub>I<sub>s</sub></li>
+        </ul>
+
+        <h3 style="border-bottom: 2px solid #999; padding-bottom: 5px; margin-top: 20px; color: #666;">Physics-only: Astrophysics</h3>
+        <ul style="list-style-type: none; padding: 0; font-size: 17px;">
+            <li style="margin-bottom: 10px;">change in wavelength &divide; reference wavelength = velocity of galaxy &divide; speed of light</li>
+        </ul>
+
         <div style="text-align: center; margin-top: 30px;">
             <button onclick="closeDataSheet()" style="padding: 10px 25px; background-color: #E64097; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">Close Sheet</button>
         </div>
-        
+
     </div>
 </div>
 
@@ -11143,7 +11468,7 @@ function switchTab(mode) {
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
-        else if (['analysis', 'divider', 'resistance', 'colorcode', 'power', 'siprefix'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
+        else if (['analysis', 'divider', 'resistance', 'colorcode', 'power', 'siprefix', 'standardform', 'conversions', 'prefixpowers', 'rearranging'].includes(mode)) subtitle.innerText = "Module 1: Physics Maths";
         else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; 
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
@@ -11211,6 +11536,26 @@ function openSubmissionModal() {
     if (currentMode === 'siprefix') {
         if (!siPrefixState.finished) {
             alert("Please complete all 8 prefixes before submitting your time!");
+            return;
+        }
+    } else if (currentMode === 'standardform') {
+        if (!window.standardFormLevelState || !window.standardFormLevelState.finished) {
+            alert("Please complete all levels before submitting your score!");
+            return;
+        }
+    } else if (currentMode === 'conversions') {
+        if (!window.conversionsLevelState || !window.conversionsLevelState.finished) {
+            alert("Please complete all levels before submitting your score!");
+            return;
+        }
+    } else if (currentMode === 'prefixpowers') {
+        if (!window.prefixPowersLevelState || !window.prefixPowersLevelState.finished) {
+            alert("Please complete all levels before submitting your score!");
+            return;
+        }
+    } else if (currentMode === 'rearranging') {
+        if (!window.rearrangingLevelState || !window.rearrangingLevelState.finished) {
+            alert("Please complete all levels before submitting your score!");
             return;
         }
     } else if (problemsAttempted === 0) {
@@ -11282,6 +11627,26 @@ function hubController(ctx, canvas) {
     if (document.getElementById("siPrefixControls")) document.getElementById("siPrefixControls").style.display = "none";
     if (document.getElementById("siPrefixGameContainer")) document.getElementById("siPrefixGameContainer").style.display = "none";
     if (window.siPrefixTimerInterval) { clearInterval(window.siPrefixTimerInterval); window.siPrefixTimerInterval = null; }
+
+    // 👇 STANDARD FORM LEVELS: same pattern - default to hidden, clear the timer.
+    if (document.getElementById("standardFormControls")) document.getElementById("standardFormControls").style.display = "none";
+    if (document.getElementById("standardFormGameContainer")) document.getElementById("standardFormGameContainer").style.display = "none";
+    if (window.standardFormTimerInterval) { clearInterval(window.standardFormTimerInterval); window.standardFormTimerInterval = null; }
+
+    // 👇 CONVERSIONS: same pattern - default to hidden, clear the timer.
+    if (document.getElementById("conversionsControls")) document.getElementById("conversionsControls").style.display = "none";
+    if (document.getElementById("conversionsGameContainer")) document.getElementById("conversionsGameContainer").style.display = "none";
+    if (window.conversionsTimerInterval) { clearInterval(window.conversionsTimerInterval); window.conversionsTimerInterval = null; }
+
+    // 👇 PREFIX POWERS: same pattern - default to hidden, clear the timer.
+    if (document.getElementById("prefixPowersControls")) document.getElementById("prefixPowersControls").style.display = "none";
+    if (document.getElementById("prefixPowersGameContainer")) document.getElementById("prefixPowersGameContainer").style.display = "none";
+    if (window.prefixPowersTimerInterval) { clearInterval(window.prefixPowersTimerInterval); window.prefixPowersTimerInterval = null; }
+
+    // 👇 REARRANGING EQUATIONS: same pattern - default to hidden, clear the timer.
+    if (document.getElementById("rearrangingControls")) document.getElementById("rearrangingControls").style.display = "none";
+    if (document.getElementById("rearrangingGameContainer")) document.getElementById("rearrangingGameContainer").style.display = "none";
+    if (window.rearrangingTimerInterval) { clearInterval(window.rearrangingTimerInterval); window.rearrangingTimerInterval = null; }
 
     // Reset grading flags
     hasCheckedCurrentProblem = false;
@@ -11364,6 +11729,38 @@ function hubController(ctx, canvas) {
         if (document.getElementById("siPrefixGameContainer")) document.getElementById("siPrefixGameContainer").style.display = "block";
         if (document.getElementById("siPrefixControls")) document.getElementById("siPrefixControls").style.display = "flex";
         if (typeof initSIPrefixGame === "function") initSIPrefixGame();
+
+    } else if (currentMode === 'standardform') {
+        // Same pattern as SI Prefix: dedicated UI in both panels.
+        if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "none";
+        if (quizSectionEl) quizSectionEl.style.display = "none";
+        if (document.getElementById("standardFormGameContainer")) document.getElementById("standardFormGameContainer").style.display = "block";
+        if (document.getElementById("standardFormControls")) document.getElementById("standardFormControls").style.display = "flex";
+        if (typeof standardFormInit === "function") standardFormInit();
+
+    } else if (currentMode === 'conversions') {
+        // Same pattern again.
+        if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "none";
+        if (quizSectionEl) quizSectionEl.style.display = "none";
+        if (document.getElementById("conversionsGameContainer")) document.getElementById("conversionsGameContainer").style.display = "block";
+        if (document.getElementById("conversionsControls")) document.getElementById("conversionsControls").style.display = "flex";
+        if (typeof conversionsInit === "function") conversionsInit();
+
+    } else if (currentMode === 'prefixpowers') {
+        // Same pattern again.
+        if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "none";
+        if (quizSectionEl) quizSectionEl.style.display = "none";
+        if (document.getElementById("prefixPowersGameContainer")) document.getElementById("prefixPowersGameContainer").style.display = "block";
+        if (document.getElementById("prefixPowersControls")) document.getElementById("prefixPowersControls").style.display = "flex";
+        if (typeof prefixPowersInit === "function") prefixPowersInit();
+
+    } else if (currentMode === 'rearranging') {
+        // Same pattern again.
+        if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "none";
+        if (quizSectionEl) quizSectionEl.style.display = "none";
+        if (document.getElementById("rearrangingGameContainer")) document.getElementById("rearrangingGameContainer").style.display = "block";
+        if (document.getElementById("rearrangingControls")) document.getElementById("rearrangingControls").style.display = "flex";
+        if (typeof rearrangingInit === "function") rearrangingInit();
 
     } else if (currentMode === 'power') {
         if (document.getElementById('inputGroupP')) document.getElementById('inputGroupP').style.display = 'inline-block';
@@ -13913,17 +14310,37 @@ async function processSubmission() {
     ========================================================= */
 
     // 3. Send Data to Google Sheets
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxWcmd8vuO1fl_Az59gBY3CSxYBMMv8djVJwqPOJ-uCMVjnUaX5ktyOQ-QLnTg5_GHE/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz-tImqiAMLw2ZzS9m5P1SaAEkQ7XJbui1WPmcW-4zCpSCYUxI-XUDHGIwQ2XuxycgL/exec'; 
     
     const formData = new URLSearchParams();
     formData.append('name', studentName);
     formData.append('teacher', teacherName);
 
     const isSIPrefixSubmission = (currentMode === 'siprefix');
+    const isStandardFormSubmission = (currentMode === 'standardform');
+    const isConversionsSubmission = (currentMode === 'conversions');
+    const isPrefixPowersSubmission = (currentMode === 'prefixpowers');
+    const isRearrangingSubmission = (currentMode === 'rearranging');
     if (isSIPrefixSubmission) {
         // Time-based submission: no "correct/attempted" score, just the completed time.
         formData.append('topic', 'SI Prefix Game');
         formData.append('time', siPrefixState.finalTime.toFixed(2));
+    } else if (isStandardFormSubmission) {
+        formData.append('topic', 'Standard Form Levels');
+        formData.append('time', window.standardFormLevelState.finalTime.toFixed(2));
+        formData.append('attempts', window.standardFormLevelState.totalAttempts);
+    } else if (isConversionsSubmission) {
+        formData.append('topic', 'Conversions Levels');
+        formData.append('time', window.conversionsLevelState.finalTime.toFixed(2));
+        formData.append('attempts', window.conversionsLevelState.totalAttempts);
+    } else if (isPrefixPowersSubmission) {
+        formData.append('topic', 'Prefix Powers Levels');
+        formData.append('time', window.prefixPowersLevelState.finalTime.toFixed(2));
+        formData.append('attempts', window.prefixPowersLevelState.totalAttempts);
+    } else if (isRearrangingSubmission) {
+        formData.append('topic', 'Rearranging Equations Levels');
+        formData.append('time', window.rearrangingLevelState.finalTime.toFixed(2));
+        formData.append('attempts', window.rearrangingLevelState.totalAttempts);
     } else {
         formData.append('topic', currentTopic);
         formData.append('correct', problemsCorrect);
@@ -13935,6 +14352,14 @@ async function processSubmission() {
         console.log('Submitted successfully.');
         if (isSIPrefixSubmission) {
             alert("Success! Your SI Prefix time of " + siPrefixState.finalTime.toFixed(1) + "s has been submitted to " + teacherName + ".");
+        } else if (isStandardFormSubmission) {
+            alert("Success! Your Standard Form time of " + window.standardFormLevelState.finalTime.toFixed(1) + "s (" + window.standardFormLevelState.totalAttempts + " attempts) has been submitted to " + teacherName + ".");
+        } else if (isConversionsSubmission) {
+            alert("Success! Your Conversions time of " + window.conversionsLevelState.finalTime.toFixed(1) + "s (" + window.conversionsLevelState.totalAttempts + " attempts) has been submitted to " + teacherName + ".");
+        } else if (isPrefixPowersSubmission) {
+            alert("Success! Your Prefix Powers time of " + window.prefixPowersLevelState.finalTime.toFixed(1) + "s (" + window.prefixPowersLevelState.totalAttempts + " attempts) has been submitted to " + teacherName + ".");
+        } else if (isRearrangingSubmission) {
+            alert("Success! Your Rearranging Equations time of " + window.rearrangingLevelState.finalTime.toFixed(1) + "s (" + window.rearrangingLevelState.totalAttempts + " attempts) has been submitted to " + teacherName + ".");
         } else {
             alert("Success! Your score of " + problemsCorrect + "/" + problemsAttempted + " has been submitted to " + teacherName + ".");
         }
@@ -13955,9 +14380,9 @@ async function processSubmission() {
         if (typeof updateScoreboard === 'function') updateScoreboard();
         
         // Trigger a new problem based on current mode
-        if (isSIPrefixSubmission) {
-            // Don't auto-restart the game - let the student see their completed result
-            // and press "Play Again" themselves if they want another go.
+        if (isSIPrefixSubmission || isStandardFormSubmission || isConversionsSubmission || isPrefixPowersSubmission || isRearrangingSubmission) {
+            // Don't auto-restart - let the student see their completed result
+            // and press "Play Again"/"Restart" themselves if they want another go.
         } else if (currentMode === 'logic_boolean' || currentMode === 'grade9boolean') {
             // Boolean logic needs the canvas context passed to it!
             const canvas = document.getElementById('circuitCanvas'); 
@@ -14178,12 +14603,12 @@ function hideAllInputGroups() {
 // requeued to reappear later in the game (at most once), so every prefix still
 // gets mastered by the end, just with a bit of spaced repetition for the tricky ones.
 const SI_PREFIX_LIST = [
-    { name: "giga",  symbol: "G", power: "10⁹" },
-    { name: "mega",  symbol: "M", power: "10⁶" },
-    { name: "kilo",  symbol: "k", power: "10³" },
-    { name: "centi", symbol: "c", power: "10⁻²" },
-    { name: "milli", symbol: "m", power: "10⁻³" },
-    { name: "micro", symbol: "μ", power: "10⁻⁶" }
+    { name: "giga",  symbol: "G", power: "10<sup style=\"font-size:1.3em;\">9</sup>" },
+    { name: "mega",  symbol: "M", power: "10<sup style=\"font-size:1.3em;\">6</sup>" },
+    { name: "kilo",  symbol: "k", power: "10<sup style=\"font-size:1.3em;\">3</sup>" },
+    { name: "centi", symbol: "c", power: "10<sup style=\"font-size:1.3em;\">-2</sup>" },
+    { name: "milli", symbol: "m", power: "10<sup style=\"font-size:1.3em;\">-3</sup>" },
+    { name: "micro", symbol: "μ", power: "10<sup style=\"font-size:1.3em;\">-6</sup>" }
 ];
 
 const SI_PREFIX_TYPES = ['name', 'symbol', 'power'];
@@ -14261,6 +14686,9 @@ function siPrefixStartNewGame() {
     const resultBox = document.getElementById('siPrefixResultBox');
     if (resultBox) resultBox.style.display = 'none';
 
+    const submitBtn = document.getElementById('siPrefixSubmitBtn');
+    if (submitBtn) submitBtn.disabled = true;
+
     const inProgressNote = document.getElementById('siPrefixInProgressNote');
     if (inProgressNote) inProgressNote.style.display = 'block';
 
@@ -14318,7 +14746,7 @@ function siPrefixLoadRound() {
 
     const targetIndex = item.prefixIndex;
     const target = SI_PREFIX_LIST[targetIndex];
-    promptEl.innerText = target[item.promptType];
+    promptEl.innerHTML = target[item.promptType];
 
     // Build the pool of cards: the 3 correct ones, plus distractors from other prefixes
     const correctCards = SI_PREFIX_TYPES.map(type => ({
@@ -14345,7 +14773,7 @@ function siPrefixLoadRound() {
     allCards.forEach(card => {
         const btn = document.createElement('button');
         btn.className = 'si-prefix-card';
-        btn.innerText = card.text;
+        btn.innerHTML = card.text;
         btn.dataset.prefixIndex = card.prefixIndex;
         btn.onclick = () => siPrefixHandleClick(btn, card.prefixIndex === targetIndex);
         grid.appendChild(btn);
@@ -14433,7 +14861,2035 @@ function siPrefixFinishGame() {
             : `Your time: ${finalTime.toFixed(1)}s (Best: ${previousBest.toFixed(1)}s)`;
     }
     if (resultBox) resultBox.style.display = 'block';
+
+    const submitBtn = document.getElementById('siPrefixSubmitBtn');
+    if (submitBtn) submitBtn.disabled = false;
 }
+
+//*****************************************************************************************
+// STANDARD FORM LEVELS (Module 1: Physics Maths)
+//*****************************************************************************************
+// A Transum-style fill-in-the-blank grid: each level shows 12 questions, mixing both
+// directions (given an ordinary number, write it in standard form; given standard form,
+// write the ordinary number). Every box must be filled before Check is enabled. Getting
+// every question right passes the level and unlocks the next (4 levels total, each one
+// introducing a genuinely new skill rather than just bigger numbers) - correct answers
+// lock in place, wrong ones stay editable for another try.
+const STANDARD_FORM_LEVELS = [
+    { expMin: 1, expMax: 3, expSign: 'positive', mantissaDecimals: 0 },
+    { expMin: 2, expMax: 5, expSign: 'positive', mantissaDecimals: 1 },
+    { expMin: 1, expMax: 4, expSign: 'negative', mantissaDecimals: 1 },
+    { expMin: 0, expMax: 8, expSign: 'mixed',    mantissaDecimals: 2 }
+];
+const STANDARD_FORM_QUESTIONS_PER_LEVEL = 12;
+const STANDARD_FORM_MAX_LEVEL = STANDARD_FORM_LEVELS.length;
+const STANDARD_FORM_BEST_KEY = "abingdonPhysics_standardFormBestTime";
+
+// Converts a mantissa/exponent pair into its ordinary decimal digit string, via string
+// manipulation (shifting the decimal point) rather than floating-point multiplication,
+// so there's never any rounding artefact in the display or the marking.
+function standardFormToOrdinaryDigits(mantissa, exp) {
+    const mantissaStr = mantissa.toString();
+    const [intPart, decPart = ''] = mantissaStr.split('.');
+    const digits = intPart + decPart;
+    const pointPos = intPart.length + exp;
+
+    let result;
+    if (pointPos <= 0) {
+        result = '0.' + '0'.repeat(-pointPos) + digits;
+    } else if (pointPos >= digits.length) {
+        result = digits + '0'.repeat(pointPos - digits.length);
+    } else {
+        result = digits.slice(0, pointPos) + '.' + digits.slice(pointPos);
+    }
+    if (result.includes('.')) {
+        result = result.replace(/0+$/, '').replace(/\.$/, '');
+    }
+    return result;
+}
+
+function standardFormAddCommas(numStr) {
+    if (numStr.includes('.')) return numStr;
+    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function standardFormOrdinaryDisplay(mantissa, exp) {
+    return standardFormAddCommas(standardFormToOrdinaryDigits(mantissa, exp));
+}
+
+function standardFormStandardDisplay(mantissa, exp) {
+    return `${mantissa} &times; 10<sup>${exp}</sup>`;
+}
+
+function standardFormGenerateNumber(levelConfig) {
+    const span = levelConfig.expMax - levelConfig.expMin + 1;
+    let exp;
+    if (levelConfig.expSign === 'positive') {
+        exp = levelConfig.expMin + Math.floor(Math.random() * span);
+    } else if (levelConfig.expSign === 'negative') {
+        exp = -(levelConfig.expMin + Math.floor(Math.random() * span));
+    } else {
+        const magnitude = levelConfig.expMin + Math.floor(Math.random() * span);
+        exp = (Math.random() < 0.5 || magnitude === 0) ? magnitude : -magnitude;
+    }
+
+    const mantissaInt = 1 + Math.floor(Math.random() * 9); // 1-9
+    let mantissa;
+    if (levelConfig.mantissaDecimals === 0) {
+        mantissa = mantissaInt;
+    } else if (levelConfig.mantissaDecimals === 1) {
+        const dec = 1 + Math.floor(Math.random() * 9); // 1-9, avoid a trailing .0
+        mantissa = parseFloat(`${mantissaInt}.${dec}`);
+    } else {
+        const dec = 10 + Math.floor(Math.random() * 90); // 10-99, two clean decimal digits
+        mantissa = parseFloat(`${mantissaInt}.${dec}`);
+    }
+
+    return { mantissa, exp };
+}
+
+// Retries until every number in the level is unique - not just visually, but by the
+// underlying (mantissa, exponent) value, regardless of which direction the question
+// asks in. Level 1 only has 27 possible combinations (3 exponents x 9 mantissas), so
+// generating 12 independently risked real duplicates showing up in the same grid.
+function standardFormBuildLevelQuestions(levelConfig) {
+    const questions = [];
+    const usedKeys = new Set();
+    let guard = 0;
+    while (questions.length < STANDARD_FORM_QUESTIONS_PER_LEVEL && guard < 500) {
+        guard++;
+        const num = standardFormGenerateNumber(levelConfig);
+        const key = `${num.mantissa}_${num.exp}`;
+        if (usedKeys.has(key)) continue;
+        usedKeys.add(key);
+        const direction = Math.random() < 0.5 ? 'toStandard' : 'fromStandard';
+        questions.push({ id: questions.length, mantissa: num.mantissa, exp: num.exp, direction, checked: false, correct: false });
+    }
+    return questions;
+}
+
+function standardFormStartLevel(levelNum) {
+    const prevState = window.standardFormLevelState;
+    const levelConfig = STANDARD_FORM_LEVELS[levelNum - 1];
+
+    window.standardFormLevelState = {
+        currentLevel: levelNum,
+        questions: standardFormBuildLevelQuestions(levelConfig),
+        levelsPassed: prevState ? prevState.levelsPassed : 0,
+        attemptsThisLevel: 0,
+        totalAttempts: prevState ? prevState.totalAttempts : 0,
+        startTime: prevState ? prevState.startTime : Date.now(),
+        finished: false
+    };
+
+    if (!window.standardFormTimerInterval) {
+        window.standardFormTimerInterval = setInterval(standardFormTick, 100);
+    }
+
+    const resultBox = document.getElementById('standardFormResultBox');
+    if (resultBox) resultBox.style.display = 'none';
+    const submitBtn = document.getElementById('standardFormSubmitBtn');
+    if (submitBtn) submitBtn.disabled = true;
+    const inProgressNote = document.getElementById('standardFormInProgressNote');
+    if (inProgressNote) {
+        inProgressNote.style.display = 'block';
+        inProgressNote.innerText = 'Fill in every box above. The Check button unlocks once all boxes have something in them.';
+    }
+
+    standardFormRenderLevelGrid();
+    standardFormUpdateLevelDisplay();
+    standardFormShowBestTime();
+}
+
+function standardFormShowBestTime() {
+    const bestDisplay = document.getElementById('standardFormBestDisplay');
+    if (!bestDisplay) return;
+    const best = localStorage.getItem(STANDARD_FORM_BEST_KEY);
+    bestDisplay.innerText = best ? `Best: ${parseFloat(best).toFixed(1)}s` : "Best: --";
+}
+
+function standardFormTick() {
+    const state = window.standardFormLevelState;
+    const timerDisplay = document.getElementById('standardFormTimerDisplay');
+    if (!timerDisplay || !state || !state.startTime || state.finished) return;
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    timerDisplay.innerText = `Time: ${elapsed.toFixed(1)}s`;
+}
+
+function standardFormInit() {
+    // Resume where they left off if they've already started this session,
+    // rather than silently resetting progress every time they revisit the tab.
+    if (window.standardFormLevelState) {
+        if (!window.standardFormTimerInterval && !window.standardFormLevelState.finished) {
+            window.standardFormTimerInterval = setInterval(standardFormTick, 100);
+        }
+        standardFormRenderLevelGrid();
+        standardFormUpdateLevelDisplay();
+        standardFormShowBestTime();
+        if (window.standardFormLevelState.finished) {
+            // They'd already completed everything - keep showing the result box
+            // (and Submit Score button) rather than hiding their finished state.
+            standardFormShowLevelResult(true);
+        } else {
+            const resultBox = document.getElementById('standardFormResultBox');
+            if (resultBox) resultBox.style.display = 'none';
+            const inProgressNote = document.getElementById('standardFormInProgressNote');
+            if (inProgressNote) {
+                inProgressNote.style.display = 'block';
+                inProgressNote.innerText = 'Fill in every box above. The Check button unlocks once all boxes have something in them.';
+            }
+        }
+    } else {
+        standardFormStartLevel(1);
+    }
+}
+
+function standardFormRestart() {
+    if (window.standardFormTimerInterval) {
+        clearInterval(window.standardFormTimerInterval);
+        window.standardFormTimerInterval = null;
+    }
+    window.standardFormLevelState = null;
+    standardFormStartLevel(1);
+}
+
+function standardFormNextLevel() {
+    const state = window.standardFormLevelState;
+    if (!state) return;
+    if (state.currentLevel >= STANDARD_FORM_MAX_LEVEL) return;
+    standardFormStartLevel(state.currentLevel + 1);
+}
+
+function standardFormRenderLevelGrid() {
+    const grid = document.getElementById('standardFormLevelGrid');
+    const state = window.standardFormLevelState;
+    if (!grid || !state) return;
+
+    grid.innerHTML = '';
+    state.questions.forEach(q => {
+        const cell = document.createElement('div');
+        cell.className = 'sf-question-cell';
+        if (q.checked) cell.classList.add(q.correct ? 'sf-correct' : 'sf-incorrect');
+
+        const displayDiv = document.createElement('div');
+        displayDiv.className = 'sf-q-display';
+
+        const inputsDiv = document.createElement('div');
+
+        if (q.direction === 'fromStandard') {
+            displayDiv.innerHTML = standardFormStandardDisplay(q.mantissa, q.exp) + ' =';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'sf-answer-input sf-ordinary-input';
+            input.autocomplete = 'off';
+            input.dataset.qid = q.id;
+            input.dataset.part = 'ordinary';
+            if (q.checked && q.correct) {
+                input.value = standardFormOrdinaryDisplay(q.mantissa, q.exp);
+                input.disabled = true;
+            } else if (q.userOrdinary !== undefined) {
+                input.value = q.userOrdinary;
+            }
+            input.oninput = () => { q.userOrdinary = input.value; standardFormUpdateCheckButtonState(); };
+            inputsDiv.appendChild(input);
+        } else {
+            displayDiv.innerText = standardFormOrdinaryDisplay(q.mantissa, q.exp) + ' =';
+            const mantissaInput = document.createElement('input');
+            mantissaInput.type = 'text';
+            mantissaInput.className = 'sf-answer-input sf-mantissa-input';
+            mantissaInput.autocomplete = 'off';
+            mantissaInput.dataset.qid = q.id;
+            mantissaInput.dataset.part = 'mantissa';
+
+            const times = document.createElement('span');
+            times.innerHTML = ' &times; 10';
+
+            const expInput = document.createElement('input');
+            expInput.type = 'text';
+            expInput.className = 'sf-answer-input sf-exp-input';
+            expInput.autocomplete = 'off';
+            expInput.dataset.qid = q.id;
+            expInput.dataset.part = 'exp';
+
+            if (q.checked && q.correct) {
+                mantissaInput.value = q.mantissa;
+                mantissaInput.disabled = true;
+                expInput.value = q.exp;
+                expInput.disabled = true;
+            } else {
+                if (q.userMantissa !== undefined) mantissaInput.value = q.userMantissa;
+                if (q.userExp !== undefined) expInput.value = q.userExp;
+            }
+            mantissaInput.oninput = () => { q.userMantissa = mantissaInput.value; standardFormUpdateCheckButtonState(); };
+            expInput.oninput = () => { q.userExp = expInput.value; standardFormUpdateCheckButtonState(); };
+
+            inputsDiv.appendChild(mantissaInput);
+            inputsDiv.appendChild(times);
+            inputsDiv.appendChild(expInput);
+        }
+
+        if (q.checked) {
+            const icon = document.createElement('span');
+            icon.className = 'sf-feedback-icon';
+            icon.innerText = q.correct ? '✅' : '❌';
+            icon.style.color = q.correct ? '#28a745' : '#dc3545';
+            inputsDiv.appendChild(icon);
+        }
+
+        cell.appendChild(displayDiv);
+        cell.appendChild(inputsDiv);
+        grid.appendChild(cell);
+    });
+
+    standardFormUpdateCheckButtonState();
+}
+
+// The Check button only enables once every still-editable (non-locked) box has content -
+// locked (already-correct) boxes don't need to be re-filled.
+function standardFormUpdateCheckButtonState() {
+    const inputs = document.querySelectorAll('#standardFormLevelGrid .sf-answer-input:not(:disabled)');
+    const allFilled = inputs.length > 0 && Array.from(inputs).every(inp => inp.value.trim() !== '');
+    const checkBtn = document.getElementById('standardFormCheckBtn');
+    if (checkBtn) checkBtn.disabled = !allFilled;
+}
+
+function standardFormNumbersEqual(a, b) {
+    const numA = parseFloat(a), numB = parseFloat(b);
+    if (isNaN(numA) || isNaN(numB)) return false;
+    return Math.abs(numA - numB) < 1e-9;
+}
+
+function standardFormCheckLevel() {
+    const state = window.standardFormLevelState;
+    if (!state) return;
+
+    state.attemptsThisLevel++;
+    state.totalAttempts++;
+
+    let allCorrect = true;
+    state.questions.forEach(q => {
+        if (q.checked && q.correct) return; // already locked in from a previous check
+
+        let isCorrect;
+        if (q.direction === 'fromStandard') {
+            const expected = standardFormToOrdinaryDigits(q.mantissa, q.exp);
+            const userVal = (q.userOrdinary || '').trim().replace(/,/g, '');
+            isCorrect = standardFormNumbersEqual(userVal, expected);
+        } else {
+            const userMantissa = parseFloat((q.userMantissa || '').trim());
+            const userExp = parseInt((q.userExp || '').trim(), 10);
+            isCorrect = !isNaN(userMantissa) && !isNaN(userExp) &&
+                Math.abs(userMantissa - q.mantissa) < 1e-9 && userExp === q.exp;
+        }
+
+        q.checked = true;
+        q.correct = isCorrect;
+        if (!isCorrect) allCorrect = false;
+    });
+
+    standardFormRenderLevelGrid();
+
+    if (allCorrect) {
+        state.levelsPassed = Math.max(state.levelsPassed, state.currentLevel);
+        standardFormShowLevelResult(true);
+    } else {
+        standardFormShowLevelResult(false);
+    }
+    standardFormUpdateLevelDisplay();
+}
+
+function standardFormShowLevelResult(passed) {
+    const state = window.standardFormLevelState;
+    const resultBox = document.getElementById('standardFormResultBox');
+    const resultHeading = document.getElementById('standardFormResultHeading');
+    const resultText = document.getElementById('standardFormResultText');
+    const nextBtn = document.getElementById('standardFormNextBtn');
+    const inProgressNote = document.getElementById('standardFormInProgressNote');
+
+    if (!passed) {
+        if (inProgressNote) {
+            inProgressNote.style.display = 'block';
+            inProgressNote.innerText = 'Not quite - red boxes are wrong. Fix them and press Check again.';
+        }
+        if (resultBox) resultBox.style.display = 'none';
+        return;
+    }
+
+    if (inProgressNote) inProgressNote.style.display = 'none';
+    if (resultBox) resultBox.style.display = 'block';
+
+    const attemptWord = state.attemptsThisLevel === 1 ? 'attempt' : 'attempts';
+    const isFinalLevel = state.currentLevel >= STANDARD_FORM_MAX_LEVEL;
+
+    if (isFinalLevel) {
+        const alreadyFinished = state.finished;
+        state.finished = true;
+
+        let finalTime;
+        if (alreadyFinished && state.finalTime !== undefined) {
+            // Already completed earlier in this session (e.g. they navigated away and
+            // came back) - reuse the original time rather than recomputing it now.
+            finalTime = state.finalTime;
+        } else {
+            if (window.standardFormTimerInterval) {
+                clearInterval(window.standardFormTimerInterval);
+                window.standardFormTimerInterval = null;
+            }
+            finalTime = (Date.now() - state.startTime) / 1000;
+            state.finalTime = finalTime;
+
+            const previousBest = parseFloat(localStorage.getItem(STANDARD_FORM_BEST_KEY));
+            const isNewBest = isNaN(previousBest) || finalTime < previousBest;
+            if (isNewBest) localStorage.setItem(STANDARD_FORM_BEST_KEY, finalTime.toFixed(2));
+            standardFormShowBestTime();
+            state.wasNewBest = isNewBest;
+            state.previousBestAtFinish = previousBest;
+        }
+
+        const timerDisplay = document.getElementById('standardFormTimerDisplay');
+        if (timerDisplay) timerDisplay.innerText = `Time: ${finalTime.toFixed(1)}s`;
+
+        if (resultHeading) resultHeading.innerText = '🏆 All Levels Complete!';
+        if (resultText) {
+            resultText.innerText = state.wasNewBest
+                ? `You finished all ${STANDARD_FORM_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s - a new best! (Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord})`
+                : `You finished all ${STANDARD_FORM_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s${state.previousBestAtFinish ? ` (best: ${state.previousBestAtFinish.toFixed(1)}s)` : ''}. Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord}.`;
+        }
+    } else {
+        if (resultHeading) resultHeading.innerText = '🎉 Level Passed!';
+        if (resultText) {
+            resultText.innerText = `Great work - Level ${state.currentLevel} complete in ${state.attemptsThisLevel} ${attemptWord}. Ready for Level ${state.currentLevel + 1}?`;
+        }
+    }
+    if (nextBtn) nextBtn.style.display = isFinalLevel ? 'none' : 'inline-block';
+    const submitBtn = document.getElementById('standardFormSubmitBtn');
+    if (submitBtn) submitBtn.disabled = !isFinalLevel;
+}
+
+function standardFormUpdateLevelDisplay() {
+    const state = window.standardFormLevelState;
+    if (!state) return;
+    const levelEl = document.getElementById('standardFormLevelDisplay');
+    if (levelEl) levelEl.innerText = `Level ${state.currentLevel} of ${STANDARD_FORM_MAX_LEVEL}`;
+    const scoreEl = document.getElementById('standardFormScoreDisplay');
+    if (scoreEl) scoreEl.innerText = `Levels passed: ${state.levelsPassed} / ${STANDARD_FORM_MAX_LEVEL}`;
+    const attemptsEl = document.getElementById('standardFormAttemptsDisplay');
+    if (attemptsEl) attemptsEl.innerText = `Attempts this level: ${state.attemptsThisLevel}  |  Total attempts: ${state.totalAttempts}`;
+}
+
+//*****************************************************************************************
+// CONVERSIONS (Module 1: Physics Maths)
+//*****************************************************************************************
+// Same fill-in-the-blank/levels/timer/attempts architecture as Standard Form, but for
+// unit conversion (e.g. "16 mV = ___ V"), drawn from real GCSE quantities rather than
+// abstract numbers - so a wrong answer is genuinely about the conversion, not about
+// guessing an arbitrary unit. Level 1 is prefix->base only, with a small prefix set;
+// each later level adds a new skill (full prefix range, then the reverse direction,
+// then messier numbers) rather than just bigger numbers.
+const CONVERSIONS_UNITS = [
+    { quantity: 'length',     symbol: 'm' },
+    { quantity: 'mass',       symbol: 'g' },
+    { quantity: 'time',       symbol: 's' },
+    { quantity: 'current',    symbol: 'A' },
+    { quantity: 'voltage',    symbol: 'V' },
+    { quantity: 'resistance', symbol: 'Ω' },
+    { quantity: 'force',      symbol: 'N' },
+    { quantity: 'energy',     symbol: 'J' },
+    { quantity: 'power',      symbol: 'W' },
+    { quantity: 'frequency',  symbol: 'Hz' }
+];
+// Mass uses gram, not kilogram, as the unit prefixes attach to - mg/g/kg are standard,
+// but a prefix stacked directly onto "kg" (e.g. "mkg") is not a real unit.
+const CONVERSIONS_PREFIXES = [
+    { name: 'giga',  symbol: 'G', power: 9 },
+    { name: 'mega',  symbol: 'M', power: 6 },
+    { name: 'kilo',  symbol: 'k', power: 3 },
+    { name: 'centi', symbol: 'c', power: -2, restrictToQuantities: ['length'] },
+    { name: 'milli', symbol: 'm', power: -3 },
+    { name: 'micro', symbol: 'μ', power: -6 }
+];
+// "centi" is restricted (above) to length only - centivolts, centiamps etc. aren't
+// units students would ever actually encounter, whereas centimetres are everyday.
+const CONVERSIONS_LEVELS = [
+    { prefixNames: ['milli', 'kilo', 'centi'], directions: ['toBase'], messy: false, forceMassToKg: true },
+    { prefixNames: ['giga', 'mega', 'kilo', 'centi', 'milli', 'micro'], directions: ['toBase'], messy: false, forceMassToKg: true },
+    { prefixNames: ['giga', 'mega', 'kilo', 'centi', 'milli', 'micro'], directions: ['toBase', 'toPrefix'], messy: false },
+    { multiCard: true } // Level 4: chain-conversion cards (see conversionsBuildLevel4Questions)
+];
+// GCSE students always work in kg for calculations (F=ma etc.), even though gram is
+// technically what prefixes attach to - so in the "standard units" levels, mass questions
+// are forced to target kg specifically rather than the usual prefix-anchor unit. Kilo is
+// excluded as a starting prefix (kg -> kg would be a no-op), but "no prefix" (bare grams)
+// is explicitly included, since converting plain g to kg is one of the most common real
+// tasks GCSE students hit (e.g. weight calculations). Levels 3-4 stay fully random.
+const CONVERSIONS_LEVEL_TITLES = [
+    "Converting to standard Physics units",
+    "Converting to standard Physics units",
+    "Converting between Physics units",
+    "Converting between Physics units"
+];
+const CONVERSIONS_QUESTIONS_PER_LEVEL = 12;
+const CONVERSIONS_CHAIN_CARD_COUNT = 4;
+const CONVERSIONS_CHAIN_ANSWERS_PER_CARD = 3;
+const CONVERSIONS_MAX_LEVEL = CONVERSIONS_LEVELS.length;
+const CONVERSIONS_BEST_KEY = "abingdonPhysics_conversionsBestTime";
+
+// Shifts the decimal point of a (possibly negative) number string by shiftPower places -
+// positive shifts right/bigger, negative shifts left/smaller. Works via string
+// manipulation rather than floating-point multiplication/division, so there's never a
+// rounding artefact in the display or the marking, no matter how many places it shifts.
+function conversionsShiftDecimal(numberStr, shiftPower) {
+    const negative = numberStr.startsWith('-');
+    const clean = negative ? numberStr.slice(1) : numberStr;
+    const [intPart, decPart = ''] = clean.split('.');
+    const digits = intPart + decPart;
+    const pointPos = intPart.length + shiftPower;
+
+    let result;
+    if (pointPos <= 0) {
+        result = '0.' + '0'.repeat(-pointPos) + digits;
+    } else if (pointPos >= digits.length) {
+        result = digits + '0'.repeat(pointPos - digits.length);
+    } else {
+        result = digits.slice(0, pointPos) + '.' + digits.slice(pointPos);
+    }
+    if (result.includes('.')) {
+        result = result.replace(/0+$/, '').replace(/\.$/, '');
+    }
+    return (negative ? '-' : '') + result;
+}
+
+function conversionsNumbersEqual(a, b) {
+    const numA = parseFloat(a), numB = parseFloat(b);
+    if (isNaN(numA) || isNaN(numB)) return false;
+    return Math.abs(numA - numB) < 1e-9;
+}
+
+function conversionsGenerateNumber(messy) {
+    // Explicitly mix 1/2/3 significant figures for variety - a plain 1-99 range can
+    // never produce 3 sig figs and is naturally weighted toward 2-digit numbers,
+    // since 90 of the 99 possible values are two digits long.
+    const sigFigs = 1 + Math.floor(Math.random() * 3);
+    let intPart;
+    if (sigFigs === 1) intPart = 1 + Math.floor(Math.random() * 9);
+    else if (sigFigs === 2) intPart = 10 + Math.floor(Math.random() * 90);
+    else intPart = 100 + Math.floor(Math.random() * 900);
+
+    if (!messy) return intPart.toString();
+    const dec = 1 + Math.floor(Math.random() * 9);
+    return `${intPart}.${dec}`;
+}
+
+// Returns every prefix compatible with a given unit, plus null (meaning "no prefix -
+// the base unit itself"), so callers can treat "base unit" as just another option
+// alongside giga/mega/kilo/etc.
+function conversionsAllowedPrefixesForUnit(unit) {
+    const filtered = CONVERSIONS_PREFIXES.filter(p => !p.restrictToQuantities || p.restrictToQuantities.includes(unit.quantity));
+    return [null, ...filtered];
+}
+
+function conversionsPrefixedSymbol(prefix, unit) {
+    return prefix ? `${prefix.symbol}${unit.symbol}` : unit.symbol;
+}
+
+// Always generates the "nice" number first (as if writing it in the prefixed unit),
+// then works out the base-unit equivalent from it - so whichever direction the question
+// actually asks in, one side is guaranteed to be a clean, intended value, and the other
+// is whatever the maths honestly produces (which is realistic - real base-unit readings
+// often do have several decimal places).
+function conversionsGenerateQuestion(levelConfig) {
+    const prefixName = levelConfig.prefixNames[Math.floor(Math.random() * levelConfig.prefixNames.length)];
+    const prefix = CONVERSIONS_PREFIXES.find(p => p.name === prefixName);
+
+    // Some prefixes (e.g. centi) only make sense for certain quantities - constrain
+    // the unit pool to what's actually compatible with the prefix we just picked.
+    const allowedUnits = prefix.restrictToQuantities
+        ? CONVERSIONS_UNITS.filter(u => prefix.restrictToQuantities.includes(u.quantity))
+        : CONVERSIONS_UNITS;
+    const unit = allowedUnits[Math.floor(Math.random() * allowedUnits.length)];
+
+    // Mass is a special case in the "standard units" levels - see note above
+    // CONVERSIONS_LEVEL_TITLES. This discards the prefix/unit combo just drawn and
+    // generates a dedicated mass->kg question instead, so it never disturbs the
+    // uniform prefix distribution for the other nine units.
+    if (unit.quantity === 'mass' && levelConfig.forceMassToKg) {
+        return conversionsGenerateMassToKgQuestion(levelConfig);
+    }
+
+    const direction = levelConfig.directions[Math.floor(Math.random() * levelConfig.directions.length)];
+
+    const number = conversionsGenerateNumber(levelConfig.messy);
+    const baseValue = conversionsShiftDecimal(number, prefix.power);
+    const expected = direction === 'toBase' ? baseValue : number;
+
+    return { unit, prefix, number, baseValue, direction, expected };
+}
+
+// Given value can be any of this level's prefixes that work for mass (excluding kilo,
+// since kg -> kg is a no-op), plus "no prefix" (bare grams) as an extra option - GCSE
+// students very commonly need practice converting plain grams to kilograms. The target
+// is always kg, computed via gram as an intermediate step regardless of the given prefix.
+function conversionsGenerateMassToKgQuestion(levelConfig) {
+    const massUnit = CONVERSIONS_UNITS.find(u => u.quantity === 'mass');
+    const kiloPrefix = CONVERSIONS_PREFIXES.find(p => p.name === 'kilo');
+
+    const levelMassPrefixes = levelConfig.prefixNames
+        .map(name => CONVERSIONS_PREFIXES.find(p => p.name === name))
+        .filter(p => !p.restrictToQuantities || p.restrictToQuantities.includes('mass'))
+        .filter(p => p.name !== 'kilo');
+    const candidates = [null, ...levelMassPrefixes]; // null = bare grams, no prefix
+
+    const givenPrefix = candidates[Math.floor(Math.random() * candidates.length)];
+    const number = conversionsGenerateNumber(levelConfig.messy);
+    const givenPower = givenPrefix ? givenPrefix.power : 0;
+    const gramValue = conversionsShiftDecimal(number, givenPower);
+    const kgValue = conversionsShiftDecimal(gramValue, -kiloPrefix.power); // grams -> kilograms
+
+    return {
+        unit: massUnit,
+        prefix: givenPrefix,
+        number,
+        baseValue: kgValue,
+        direction: 'toBase',
+        expected: kgValue,
+        targetSymbolOverride: 'kg'
+    };
+}
+
+function conversionsBuildLevelQuestions(levelConfig) {
+    const questions = [];
+    const usedKeys = new Set();
+    let guard = 0;
+    while (questions.length < CONVERSIONS_QUESTIONS_PER_LEVEL && guard < 500) {
+        guard++;
+        const q = conversionsGenerateQuestion(levelConfig);
+        const key = `${q.unit.symbol}_${q.prefix ? q.prefix.name : 'base'}_${q.number}_${q.direction}`;
+        if (usedKeys.has(key)) continue;
+        usedKeys.add(key);
+        questions.push({ id: questions.length, ...q, checked: false, correct: false });
+    }
+    return questions;
+}
+
+const CONVERSIONS_CHAIN_MAX_POWER_SPAN = 6;
+
+// Level 4: instead of one input per question, each "card" shows a single given value
+// and three separate boxes asking for it in three other prefixes at once (e.g.
+// "12 cm" -> "= ___ m", "= ___ mm", "= ___ km"). This tests seeing the same quantity
+// across scales, rather than just one more isolated conversion. Internally it's still
+// a flat list of independently-markable answers (each with a precomputed "expected"
+// value) tagged with a shared cardIndex, so the rest of the check/render machinery
+// barely needs to know the difference.
+function conversionsBuildLevel4Questions() {
+    const cards = [];
+    const usedCardKeys = new Set();
+    let guard = 0;
+
+    while (cards.length < CONVERSIONS_CHAIN_CARD_COUNT && guard < 1000) {
+        guard++;
+        const unit = CONVERSIONS_UNITS[Math.floor(Math.random() * CONVERSIONS_UNITS.length)];
+        const allowed = conversionsAllowedPrefixesForUnit(unit);
+
+        const givenPrefix = allowed[Math.floor(Math.random() * allowed.length)];
+        const givenPower = givenPrefix ? givenPrefix.power : 0;
+
+        // Only offer targets within +-6 orders of magnitude of the given value - e.g.
+        // never pair mega with micro (a 12-order jump). If the given prefix we just
+        // picked doesn't have enough compatible targets (giga, for instance, is only
+        // ever within range of kilo and mega), just retry with a different one.
+        const candidateTargets = allowed.filter(p => {
+            if (p === givenPrefix) return false;
+            const power = p ? p.power : 0;
+            return Math.abs(power - givenPower) <= CONVERSIONS_CHAIN_MAX_POWER_SPAN;
+        });
+        if (candidateTargets.length < CONVERSIONS_CHAIN_ANSWERS_PER_CARD) continue;
+
+        const shuffledTargets = candidateTargets.slice().sort(() => Math.random() - 0.5);
+        const targetPrefixes = shuffledTargets.slice(0, CONVERSIONS_CHAIN_ANSWERS_PER_CARD);
+
+        const number = conversionsGenerateNumber(false); // kept clean - the 3-way structure is the difficulty here, not messy decimals
+        const baseValue = conversionsShiftDecimal(number, givenPower);
+
+        const cardKey = `${unit.symbol}_${givenPrefix ? givenPrefix.name : 'base'}_${number}`;
+        if (usedCardKeys.has(cardKey)) continue;
+        usedCardKeys.add(cardKey);
+
+        cards.push({ unit, givenPrefix, number, baseValue, targetPrefixes });
+    }
+
+    const questions = [];
+    cards.forEach((card, cardIndex) => {
+        card.targetPrefixes.forEach(targetPrefix => {
+            const targetPower = targetPrefix ? targetPrefix.power : 0;
+            const expected = conversionsShiftDecimal(card.baseValue, -targetPower);
+            questions.push({
+                id: questions.length,
+                cardIndex,
+                unit: card.unit,
+                givenPrefix: card.givenPrefix,
+                number: card.number,
+                targetPrefix,
+                expected,
+                checked: false,
+                correct: false
+            });
+        });
+    });
+
+    return questions;
+}
+
+function conversionsStartLevel(levelNum) {
+    const prevState = window.conversionsLevelState;
+    const levelConfig = CONVERSIONS_LEVELS[levelNum - 1];
+    const isMultiCard = !!levelConfig.multiCard;
+
+    window.conversionsLevelState = {
+        currentLevel: levelNum,
+        isMultiCard,
+        questions: isMultiCard ? conversionsBuildLevel4Questions() : conversionsBuildLevelQuestions(levelConfig),
+        levelsPassed: prevState ? prevState.levelsPassed : 0,
+        attemptsThisLevel: 0,
+        totalAttempts: prevState ? prevState.totalAttempts : 0,
+        startTime: prevState ? prevState.startTime : Date.now(),
+        finished: false
+    };
+
+    if (!window.conversionsTimerInterval) {
+        window.conversionsTimerInterval = setInterval(conversionsTick, 100);
+    }
+
+    const resultBox = document.getElementById('conversionsResultBox');
+    if (resultBox) resultBox.style.display = 'none';
+    const submitBtn = document.getElementById('conversionsSubmitBtn');
+    if (submitBtn) submitBtn.disabled = true;
+    const inProgressNote = document.getElementById('conversionsInProgressNote');
+    if (inProgressNote) {
+        inProgressNote.style.display = 'block';
+        inProgressNote.innerText = 'Fill in every box above. The Check button unlocks once all boxes have something in them.';
+    }
+
+    conversionsRenderLevelGrid();
+    conversionsUpdateLevelDisplay();
+    conversionsShowBestTime();
+}
+
+function conversionsTick() {
+    const state = window.conversionsLevelState;
+    const timerDisplay = document.getElementById('conversionsTimerDisplay');
+    if (!timerDisplay || !state || !state.startTime || state.finished) return;
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    timerDisplay.innerText = `Time: ${elapsed.toFixed(1)}s`;
+}
+
+function conversionsShowBestTime() {
+    const bestDisplay = document.getElementById('conversionsBestDisplay');
+    if (!bestDisplay) return;
+    const best = localStorage.getItem(CONVERSIONS_BEST_KEY);
+    bestDisplay.innerText = best ? `Best: ${parseFloat(best).toFixed(1)}s` : "Best: --";
+}
+
+function conversionsInit() {
+    if (window.conversionsLevelState) {
+        if (!window.conversionsTimerInterval && !window.conversionsLevelState.finished) {
+            window.conversionsTimerInterval = setInterval(conversionsTick, 100);
+        }
+        conversionsRenderLevelGrid();
+        conversionsUpdateLevelDisplay();
+        conversionsShowBestTime();
+        if (window.conversionsLevelState.finished) {
+            conversionsShowLevelResult(true);
+        } else {
+            const resultBox = document.getElementById('conversionsResultBox');
+            if (resultBox) resultBox.style.display = 'none';
+            const inProgressNote = document.getElementById('conversionsInProgressNote');
+            if (inProgressNote) {
+                inProgressNote.style.display = 'block';
+                inProgressNote.innerText = 'Fill in every box above. The Check button unlocks once all boxes have something in them.';
+            }
+        }
+    } else {
+        conversionsStartLevel(1);
+    }
+}
+
+function conversionsRestart() {
+    if (window.conversionsTimerInterval) {
+        clearInterval(window.conversionsTimerInterval);
+        window.conversionsTimerInterval = null;
+    }
+    window.conversionsLevelState = null;
+    conversionsStartLevel(1);
+}
+
+function conversionsNextLevel() {
+    const state = window.conversionsLevelState;
+    if (!state) return;
+    if (state.currentLevel >= CONVERSIONS_MAX_LEVEL) return;
+    conversionsStartLevel(state.currentLevel + 1);
+}
+
+function conversionsRenderLevelGrid() {
+    const grid = document.getElementById('conversionsLevelGrid');
+    const state = window.conversionsLevelState;
+    if (!grid || !state) return;
+
+    grid.innerHTML = '';
+    if (state.isMultiCard) {
+        grid.style.gridTemplateColumns = 'repeat(2, 1fr)'; // wider cards - each holds 3 answer rows
+        conversionsRenderMultiCardGrid(grid, state);
+    } else {
+        grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        conversionsRenderStandardGrid(grid, state);
+    }
+    conversionsUpdateCheckButtonState();
+}
+
+function conversionsRenderStandardGrid(grid, state) {
+    state.questions.forEach(q => {
+        const cell = document.createElement('div');
+        cell.className = 'sf-question-cell';
+        if (q.checked) cell.classList.add(q.correct ? 'sf-correct' : 'sf-incorrect');
+
+        const displayDiv = document.createElement('div');
+        displayDiv.className = 'sf-q-display';
+
+        const inputsDiv = document.createElement('div');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'sf-answer-input sf-ordinary-input';
+        input.autocomplete = 'off';
+        input.dataset.qid = q.id;
+        input.style.width = '90px';
+
+        if (q.direction === 'toBase') {
+            const givenSymbol = conversionsPrefixedSymbol(q.prefix, q.unit);
+            displayDiv.innerText = `${q.number} ${givenSymbol} =`;
+        } else {
+            displayDiv.innerText = `${q.baseValue} ${q.unit.symbol} =`;
+        }
+        if (q.checked && q.correct) {
+            input.value = q.expected;
+            input.disabled = true;
+        } else if (q.userAnswer !== undefined) {
+            input.value = q.userAnswer;
+        }
+        inputsDiv.appendChild(input);
+        const unitLabel = document.createElement('span');
+        const toBaseSymbol = q.targetSymbolOverride || q.unit.symbol;
+        unitLabel.innerText = q.direction === 'toBase' ? ` ${toBaseSymbol}` : ` ${q.prefix.symbol}${q.unit.symbol}`;
+        unitLabel.style.fontWeight = 'bold';
+        inputsDiv.appendChild(unitLabel);
+
+        input.oninput = () => { q.userAnswer = input.value; conversionsUpdateCheckButtonState(); };
+
+        if (q.checked) {
+            const icon = document.createElement('span');
+            icon.className = 'sf-feedback-icon';
+            icon.innerText = q.correct ? '✅' : '❌';
+            icon.style.color = q.correct ? '#28a745' : '#dc3545';
+            inputsDiv.appendChild(icon);
+        }
+
+        cell.appendChild(displayDiv);
+        cell.appendChild(inputsDiv);
+        grid.appendChild(cell);
+    });
+}
+
+// Level 4: groups the flat questions array by cardIndex into taller cards, each with
+// one given value at the top and three independently-markable answer rows below it.
+function conversionsRenderMultiCardGrid(grid, state) {
+    const cardCount = Math.max(...state.questions.map(q => q.cardIndex)) + 1;
+
+    for (let c = 0; c < cardCount; c++) {
+        const cardQuestions = state.questions.filter(q => q.cardIndex === c);
+        if (cardQuestions.length === 0) continue;
+        const first = cardQuestions[0];
+
+        const cell = document.createElement('div');
+        cell.className = 'sf-question-cell';
+        const allChecked = cardQuestions.every(q => q.checked);
+        const allCorrect = cardQuestions.every(q => q.correct);
+        if (allChecked) cell.classList.add(allCorrect ? 'sf-correct' : 'sf-incorrect');
+
+        const header = document.createElement('div');
+        header.className = 'sf-q-display';
+        header.style.fontSize = '1.15em';
+        header.style.marginBottom = '12px';
+        header.innerText = `${first.number} ${conversionsPrefixedSymbol(first.givenPrefix, first.unit)}`;
+        cell.appendChild(header);
+
+        cardQuestions.forEach(q => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.justifyContent = 'center';
+            row.style.gap = '4px';
+            row.style.margin = '8px 0';
+
+            const eq = document.createElement('span');
+            eq.innerText = '=';
+            row.appendChild(eq);
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'sf-answer-input sf-ordinary-input';
+            input.autocomplete = 'off';
+            input.dataset.qid = q.id;
+            input.style.width = '85px';
+            if (q.checked && q.correct) {
+                input.value = q.expected;
+                input.disabled = true;
+            } else if (q.userAnswer !== undefined) {
+                input.value = q.userAnswer;
+            }
+            input.oninput = () => { q.userAnswer = input.value; conversionsUpdateCheckButtonState(); };
+            row.appendChild(input);
+
+            const unitLabel = document.createElement('span');
+            unitLabel.innerText = conversionsPrefixedSymbol(q.targetPrefix, q.unit);
+            unitLabel.style.fontWeight = 'bold';
+            row.appendChild(unitLabel);
+
+            if (q.checked) {
+                const icon = document.createElement('span');
+                icon.className = 'sf-feedback-icon';
+                icon.innerText = q.correct ? '✅' : '❌';
+                icon.style.color = q.correct ? '#28a745' : '#dc3545';
+                row.appendChild(icon);
+            }
+
+            cell.appendChild(row);
+        });
+
+        grid.appendChild(cell);
+    }
+}
+
+function conversionsUpdateCheckButtonState() {
+    const inputs = document.querySelectorAll('#conversionsLevelGrid .sf-answer-input:not(:disabled)');
+    const allFilled = inputs.length > 0 && Array.from(inputs).every(inp => inp.value.trim() !== '');
+    const checkBtn = document.getElementById('conversionsCheckBtn');
+    if (checkBtn) checkBtn.disabled = !allFilled;
+}
+
+function conversionsCheckLevel() {
+    const state = window.conversionsLevelState;
+    if (!state) return;
+
+    state.attemptsThisLevel++;
+    state.totalAttempts++;
+
+    let allCorrect = true;
+    state.questions.forEach(q => {
+        if (q.checked && q.correct) return;
+
+        const userVal = (q.userAnswer || '').trim();
+        const isCorrect = conversionsNumbersEqual(userVal, q.expected);
+
+        q.checked = true;
+        q.correct = isCorrect;
+        if (!isCorrect) allCorrect = false;
+    });
+
+    conversionsRenderLevelGrid();
+
+    if (allCorrect) {
+        state.levelsPassed = Math.max(state.levelsPassed, state.currentLevel);
+        conversionsShowLevelResult(true);
+    } else {
+        conversionsShowLevelResult(false);
+    }
+    conversionsUpdateLevelDisplay();
+}
+
+function conversionsShowLevelResult(passed) {
+    const state = window.conversionsLevelState;
+    const resultBox = document.getElementById('conversionsResultBox');
+    const resultHeading = document.getElementById('conversionsResultHeading');
+    const resultText = document.getElementById('conversionsResultText');
+    const nextBtn = document.getElementById('conversionsNextBtn');
+    const inProgressNote = document.getElementById('conversionsInProgressNote');
+
+    if (!passed) {
+        if (inProgressNote) {
+            inProgressNote.style.display = 'block';
+            inProgressNote.innerText = 'Not quite - red boxes are wrong. Fix them and press Check again.';
+        }
+        if (resultBox) resultBox.style.display = 'none';
+        return;
+    }
+
+    if (inProgressNote) inProgressNote.style.display = 'none';
+    if (resultBox) resultBox.style.display = 'block';
+
+    const attemptWord = state.attemptsThisLevel === 1 ? 'attempt' : 'attempts';
+    const isFinalLevel = state.currentLevel >= CONVERSIONS_MAX_LEVEL;
+
+    if (isFinalLevel) {
+        const alreadyFinished = state.finished;
+        state.finished = true;
+
+        let finalTime;
+        if (alreadyFinished && state.finalTime !== undefined) {
+            finalTime = state.finalTime;
+        } else {
+            if (window.conversionsTimerInterval) {
+                clearInterval(window.conversionsTimerInterval);
+                window.conversionsTimerInterval = null;
+            }
+            finalTime = (Date.now() - state.startTime) / 1000;
+            state.finalTime = finalTime;
+
+            const previousBest = parseFloat(localStorage.getItem(CONVERSIONS_BEST_KEY));
+            const isNewBest = isNaN(previousBest) || finalTime < previousBest;
+            if (isNewBest) localStorage.setItem(CONVERSIONS_BEST_KEY, finalTime.toFixed(2));
+            conversionsShowBestTime();
+            state.wasNewBest = isNewBest;
+            state.previousBestAtFinish = previousBest;
+        }
+
+        const timerDisplay = document.getElementById('conversionsTimerDisplay');
+        if (timerDisplay) timerDisplay.innerText = `Time: ${finalTime.toFixed(1)}s`;
+
+        if (resultHeading) resultHeading.innerText = '🏆 All Levels Complete!';
+        if (resultText) {
+            resultText.innerText = state.wasNewBest
+                ? `You finished all ${CONVERSIONS_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s - a new best! (Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord})`
+                : `You finished all ${CONVERSIONS_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s${state.previousBestAtFinish ? ` (best: ${state.previousBestAtFinish.toFixed(1)}s)` : ''}. Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord}.`;
+        }
+    } else {
+        if (resultHeading) resultHeading.innerText = '🎉 Level Passed!';
+        if (resultText) {
+            resultText.innerText = `Great work - Level ${state.currentLevel} complete in ${state.attemptsThisLevel} ${attemptWord}. Ready for Level ${state.currentLevel + 1}?`;
+        }
+    }
+    if (nextBtn) nextBtn.style.display = isFinalLevel ? 'none' : 'inline-block';
+    const submitBtn = document.getElementById('conversionsSubmitBtn');
+    if (submitBtn) submitBtn.disabled = !isFinalLevel;
+}
+
+function conversionsUpdateLevelDisplay() {
+    const state = window.conversionsLevelState;
+    if (!state) return;
+    const levelEl = document.getElementById('conversionsLevelDisplay');
+    if (levelEl) levelEl.innerText = `Level ${state.currentLevel} of ${CONVERSIONS_MAX_LEVEL}`;
+    const titleEl = document.getElementById('conversionsLevelTitleDisplay');
+    if (titleEl) titleEl.innerText = CONVERSIONS_LEVEL_TITLES[state.currentLevel - 1];
+    const scoreEl = document.getElementById('conversionsScoreDisplay');
+    if (scoreEl) scoreEl.innerText = `Levels passed: ${state.levelsPassed} / ${CONVERSIONS_MAX_LEVEL}`;
+    const attemptsEl = document.getElementById('conversionsAttemptsDisplay');
+    if (attemptsEl) attemptsEl.innerText = `Attempts this level: ${state.attemptsThisLevel}  |  Total attempts: ${state.totalAttempts}`;
+}
+
+//*****************************************************************************************
+// PREFIX POWERS (Module 1: Physics Maths)
+//*****************************************************************************************
+// Bridges Standard Form and Conversions: the same mantissa is shown in standard form on
+// both sides of an equation, but written in two different prefixed units, and the
+// student fills in which unit symbol makes the equation true (e.g. "1.23x10^6 g =
+// 1.23x10^3 ___" -> "kg"). Centi is excluded entirely - every other prefix sits at a
+// multiple of 3 in its exponent, so the mantissa can stay identical on both sides and
+// the exponent always shifts by a clean +-3/6/9; centi would break that pattern. Answers
+// are the exact unit symbol, case-sensitive, matching Conversions' convention.
+// Resistance (Ω) and micro (μ) are excluded here specifically - unlike Conversions,
+// this exercise requires the student to actually TYPE the unit symbol as the answer,
+// and both of these characters need a keyboard shortcut most students won't know.
+const PREFIX_POWERS_UNITS = CONVERSIONS_UNITS.filter(u => u.quantity !== 'resistance');
+const PREFIX_POWERS_PREFIXES = [null, ...CONVERSIONS_PREFIXES.filter(p => p.name !== 'centi' && p.name !== 'micro')]; // null = base unit, no prefix
+const PREFIX_POWERS_LEVELS = [
+    { allowedGaps: [3], anchored: true },
+    { allowedGaps: [3, 6], anchored: true },
+    { allowedGaps: [3, 6], anchored: false }
+];
+const PREFIX_POWERS_LEVEL_TITLES = [
+    "Converting from standard units (10^3)",
+    "Converting from standard units (10^3 and 10^6)",
+    "Converting between any prefixes (10^3 and 10^6)"
+];
+const PREFIX_POWERS_QUESTIONS_PER_LEVEL = 8;
+const PREFIX_POWERS_MAX_LEVEL = PREFIX_POWERS_LEVELS.length;
+const PREFIX_POWERS_BEST_KEY = "abingdonPhysics_prefixPowersBestTime";
+
+// Every ordered pair of prefixes whose power gap is one of this level's allowed gaps -
+// built once per level rather than per-question since the pool is small and fixed.
+function prefixPowersBuildPairs(allowedGaps) {
+    const pairs = [];
+    for (let i = 0; i < PREFIX_POWERS_PREFIXES.length; i++) {
+        for (let j = 0; j < PREFIX_POWERS_PREFIXES.length; j++) {
+            if (i === j) continue;
+            const pA = PREFIX_POWERS_PREFIXES[i], pB = PREFIX_POWERS_PREFIXES[j];
+            const powerA = pA ? pA.power : 0, powerB = pB ? pB.power : 0;
+            if (allowedGaps.includes(Math.abs(powerA - powerB))) pairs.push([pA, pB]);
+        }
+    }
+    return pairs;
+}
+
+// "x10^0" is an unnecessary complication for GCSE level (and edges toward the
+// base-unit-vs-prefix distinction we're deliberately not teaching yet) - when the
+// exponent happens to be 0, just show the plain mantissa with no power-of-ten at all.
+function prefixPowersFormatValue(mantissa, exp) {
+    if (exp === 0) return `${mantissa}`;
+    return `${mantissa} &times; 10<sup>${exp}</sup>`;
+}
+
+function prefixPowersGenerateMantissa() {
+    const intPart = 1 + Math.floor(Math.random() * 9); // 1-9, proper standard-form mantissa
+    const decimalPlaces = Math.floor(Math.random() * 3); // 0, 1, or 2 decimal digits for variety
+    if (decimalPlaces === 0) return intPart.toString();
+    const decDigits = (1 + Math.floor(Math.random() * (Math.pow(10, decimalPlaces) - 1))).toString().padStart(decimalPlaces, '0');
+    return `${intPart}.${decDigits}`;
+}
+
+// Given side's exponent is picked freely (any "standard form-looking" value); the
+// target's exponent is then derived so the same mantissa stays valid - i.e. it must
+// shift by exactly the power gap between the two chosen prefixes.
+function prefixPowersGenerateQuestion(pairs) {
+    const [givenPrefix, targetPrefix] = pairs[Math.floor(Math.random() * pairs.length)];
+    const unit = PREFIX_POWERS_UNITS[Math.floor(Math.random() * PREFIX_POWERS_UNITS.length)];
+    const mantissa = prefixPowersGenerateMantissa();
+
+    const givenPower = givenPrefix ? givenPrefix.power : 0;
+    const targetPower = targetPrefix ? targetPrefix.power : 0;
+
+    const givenExp = 1 + Math.floor(Math.random() * 9); // 1-9, arbitrary "nice" exponent
+    const targetExp = givenExp + (givenPower - targetPower);
+
+    return {
+        unit, givenPrefix, targetPrefix, mantissa,
+        givenExp, targetExp,
+        expected: conversionsPrefixedSymbol(targetPrefix, unit)
+    };
+}
+
+// The standard unit for a quantity, for the "anchored" levels - kg for mass (matching
+// how Conversions treats it), otherwise the plain base unit with no prefix.
+function prefixPowersAnchorForUnit(unit) {
+    return unit.quantity === 'mass' ? CONVERSIONS_PREFIXES.find(p => p.name === 'kilo') : null;
+}
+
+// Anchored levels always give the standard unit and ask for a prefixed equivalent -
+// never the other way around - to keep the easier levels to a single direction of
+// reasoning. Bidirectional pairs (used by later, harder levels) aren't used here.
+function prefixPowersGenerateAnchoredQuestion(levelConfig) {
+    const unit = PREFIX_POWERS_UNITS[Math.floor(Math.random() * PREFIX_POWERS_UNITS.length)];
+    const anchorPrefix = prefixPowersAnchorForUnit(unit);
+    const anchorPower = anchorPrefix ? anchorPrefix.power : 0;
+
+    const candidateTargets = PREFIX_POWERS_PREFIXES.filter(p => {
+        if (p === anchorPrefix) return false; // would be a no-op
+        const power = p ? p.power : 0;
+        return levelConfig.allowedGaps.includes(Math.abs(power - anchorPower));
+    });
+    if (candidateTargets.length === 0) return null;
+
+    const targetPrefix = candidateTargets[Math.floor(Math.random() * candidateTargets.length)];
+    const targetPower = targetPrefix ? targetPrefix.power : 0;
+    const mantissa = prefixPowersGenerateMantissa();
+    const givenExp = 1 + Math.floor(Math.random() * 9);
+    const targetExp = givenExp + (anchorPower - targetPower);
+
+    return {
+        unit, givenPrefix: anchorPrefix, targetPrefix, mantissa,
+        givenExp, targetExp,
+        expected: conversionsPrefixedSymbol(targetPrefix, unit)
+    };
+}
+
+function prefixPowersBuildLevelQuestions(levelConfig) {
+    const pairs = levelConfig.anchored ? null : prefixPowersBuildPairs(levelConfig.allowedGaps);
+    const questions = [];
+    const usedKeys = new Set();
+    let guard = 0;
+    while (questions.length < PREFIX_POWERS_QUESTIONS_PER_LEVEL && guard < 500) {
+        guard++;
+        const q = levelConfig.anchored
+            ? prefixPowersGenerateAnchoredQuestion(levelConfig)
+            : prefixPowersGenerateQuestion(pairs);
+        if (!q) continue;
+        const key = `${q.unit.symbol}_${q.givenPrefix ? q.givenPrefix.name : 'base'}_${q.targetPrefix ? q.targetPrefix.name : 'base'}_${q.mantissa}_${q.givenExp}`;
+        if (usedKeys.has(key)) continue;
+        usedKeys.add(key);
+        questions.push({ id: questions.length, ...q, checked: false, correct: false });
+    }
+    return questions;
+}
+
+function prefixPowersStartLevel(levelNum) {
+    const prevState = window.prefixPowersLevelState;
+    const levelConfig = PREFIX_POWERS_LEVELS[levelNum - 1];
+
+    window.prefixPowersLevelState = {
+        currentLevel: levelNum,
+        questions: prefixPowersBuildLevelQuestions(levelConfig),
+        levelsPassed: prevState ? prevState.levelsPassed : 0,
+        attemptsThisLevel: 0,
+        totalAttempts: prevState ? prevState.totalAttempts : 0,
+        startTime: prevState ? prevState.startTime : Date.now(),
+        finished: false
+    };
+
+    if (!window.prefixPowersTimerInterval) {
+        window.prefixPowersTimerInterval = setInterval(prefixPowersTick, 100);
+    }
+
+    const resultBox = document.getElementById('prefixPowersResultBox');
+    if (resultBox) resultBox.style.display = 'none';
+    const submitBtn = document.getElementById('prefixPowersSubmitBtn');
+    if (submitBtn) submitBtn.disabled = true;
+    const inProgressNote = document.getElementById('prefixPowersInProgressNote');
+    if (inProgressNote) {
+        inProgressNote.style.display = 'block';
+        inProgressNote.innerText = 'Type a unit symbol (not a number) in each box - e.g. kg, mA, MW. The Check button unlocks once every box has something in it.';
+    }
+
+    prefixPowersRenderLevelGrid();
+    prefixPowersUpdateLevelDisplay();
+    prefixPowersShowBestTime();
+}
+
+function prefixPowersTick() {
+    const state = window.prefixPowersLevelState;
+    const timerDisplay = document.getElementById('prefixPowersTimerDisplay');
+    if (!timerDisplay || !state || !state.startTime || state.finished) return;
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    timerDisplay.innerText = `Time: ${elapsed.toFixed(1)}s`;
+}
+
+function prefixPowersShowBestTime() {
+    const bestDisplay = document.getElementById('prefixPowersBestDisplay');
+    if (!bestDisplay) return;
+    const best = localStorage.getItem(PREFIX_POWERS_BEST_KEY);
+    bestDisplay.innerText = best ? `Best: ${parseFloat(best).toFixed(1)}s` : "Best: --";
+}
+
+function prefixPowersInit() {
+    if (window.prefixPowersLevelState) {
+        if (!window.prefixPowersTimerInterval && !window.prefixPowersLevelState.finished) {
+            window.prefixPowersTimerInterval = setInterval(prefixPowersTick, 100);
+        }
+        prefixPowersRenderLevelGrid();
+        prefixPowersUpdateLevelDisplay();
+        prefixPowersShowBestTime();
+        if (window.prefixPowersLevelState.finished) {
+            prefixPowersShowLevelResult(true);
+        } else {
+            const resultBox = document.getElementById('prefixPowersResultBox');
+            if (resultBox) resultBox.style.display = 'none';
+            const inProgressNote = document.getElementById('prefixPowersInProgressNote');
+            if (inProgressNote) {
+                inProgressNote.style.display = 'block';
+                inProgressNote.innerText = 'Type a unit symbol (not a number) in each box - e.g. kg, mA, MW. The Check button unlocks once every box has something in it.';
+            }
+        }
+    } else {
+        prefixPowersStartLevel(1);
+    }
+}
+
+function prefixPowersRestart() {
+    if (window.prefixPowersTimerInterval) {
+        clearInterval(window.prefixPowersTimerInterval);
+        window.prefixPowersTimerInterval = null;
+    }
+    window.prefixPowersLevelState = null;
+    prefixPowersStartLevel(1);
+}
+
+function prefixPowersNextLevel() {
+    const state = window.prefixPowersLevelState;
+    if (!state) return;
+    if (state.currentLevel >= PREFIX_POWERS_MAX_LEVEL) return;
+    prefixPowersStartLevel(state.currentLevel + 1);
+}
+
+function prefixPowersRenderLevelGrid() {
+    const grid = document.getElementById('prefixPowersLevelGrid');
+    const state = window.prefixPowersLevelState;
+    if (!grid || !state) return;
+
+    grid.innerHTML = '';
+    grid.style.gridTemplateColumns = '1fr'; // single column - full width per equation, no wrapping
+    grid.style.gap = '6px';
+
+    state.questions.forEach(q => {
+        const cell = document.createElement('div');
+        cell.className = 'sf-question-cell';
+        if (q.checked) cell.classList.add(q.correct ? 'sf-correct' : (q.caseMismatch ? 'sf-case-warning' : 'sf-incorrect'));
+        // Standard Form/Conversions need generous padding for their taller layouts;
+        // this exercise is a single line, so override it much tighter here.
+        cell.style.padding = '6px 10px';
+        cell.style.textAlign = 'left';
+
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.justifyContent = 'flex-start';
+        row.style.flexWrap = 'wrap';
+        row.style.gap = '4px';
+        row.style.fontWeight = 'bold';
+
+        const givenSymbol = conversionsPrefixedSymbol(q.givenPrefix, q.unit);
+        const givenSpan = document.createElement('span');
+        givenSpan.innerHTML = `${prefixPowersFormatValue(q.mantissa, q.givenExp)} ${givenSymbol} =`;
+        row.appendChild(givenSpan);
+
+        const targetSpan = document.createElement('span');
+        targetSpan.innerHTML = prefixPowersFormatValue(q.mantissa, q.targetExp);
+        row.appendChild(targetSpan);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'sf-answer-input sf-ordinary-input';
+        input.autocomplete = 'off';
+        input.dataset.qid = q.id;
+        input.style.width = '70px';
+        if (q.checked && q.correct) {
+            input.value = q.expected;
+            input.disabled = true;
+        } else if (q.userAnswer !== undefined) {
+            input.value = q.userAnswer;
+        }
+        input.oninput = () => { q.userAnswer = input.value; prefixPowersUpdateCheckButtonState(); };
+        row.appendChild(input);
+
+        if (q.checked) {
+            const icon = document.createElement('span');
+            icon.className = 'sf-feedback-icon';
+            if (q.correct) {
+                icon.innerText = '✅';
+                icon.style.color = '#28a745';
+            } else if (q.caseMismatch) {
+                icon.innerText = '⚠️';
+                icon.style.color = '#fd7e14';
+            } else {
+                icon.innerText = '❌';
+                icon.style.color = '#dc3545';
+            }
+            row.appendChild(icon);
+        }
+
+        cell.appendChild(row);
+
+        if (q.checked && q.caseMismatch) {
+            const hint = document.createElement('div');
+            hint.style.fontWeight = 'normal';
+            hint.style.fontSize = '0.85em';
+            hint.style.color = '#a15c00';
+            hint.style.marginTop = '4px';
+            hint.innerText = 'Right unit, wrong capitals - check which letters should be capital.';
+            cell.appendChild(hint);
+        }
+
+        grid.appendChild(cell);
+    });
+
+    prefixPowersUpdateCheckButtonState();
+}
+
+function prefixPowersUpdateCheckButtonState() {
+    const inputs = document.querySelectorAll('#prefixPowersLevelGrid .sf-answer-input:not(:disabled)');
+    const allFilled = inputs.length > 0 && Array.from(inputs).every(inp => inp.value.trim() !== '');
+    const checkBtn = document.getElementById('prefixPowersCheckBtn');
+    if (checkBtn) checkBtn.disabled = !allFilled;
+}
+
+// Checks whether a string is ANY real unit symbol in this exercise's system - used to
+// avoid misdiagnosing a genuine wrong-prefix answer as a mere capitalisation slip. This
+// matters because M(mega)/m(milli) are case-flips of each other but 10^9 apart, and
+// G(giga)/g(bare grams) has the same trap - a student who mixed those up chose the
+// wrong prefix entirely, not just the wrong capital letter.
+function prefixPowersIsAnyValidSymbol(str) {
+    for (const prefix of PREFIX_POWERS_PREFIXES) {
+        for (const unit of PREFIX_POWERS_UNITS) {
+            if (conversionsPrefixedSymbol(prefix, unit) === str) return true;
+        }
+    }
+    return false;
+}
+
+function prefixPowersCheckLevel() {
+    const state = window.prefixPowersLevelState;
+    if (!state) return;
+
+    state.attemptsThisLevel++;
+    state.totalAttempts++;
+
+    let allCorrect = true;
+    state.questions.forEach(q => {
+        if (q.checked && q.correct) return;
+
+        // Symbol answers are case-sensitive, exact match - no numeric tolerance here.
+        // A case-only mismatch (e.g. "Kg" for "kg") is flagged separately, since it's a
+        // different (and much easier to fix) mistake than getting the unit itself wrong.
+        const userVal = (q.userAnswer || '').trim();
+        const isCorrect = userVal === q.expected;
+        const isCaseMismatch = !isCorrect
+            && userVal.toLowerCase() === q.expected.toLowerCase()
+            && !prefixPowersIsAnyValidSymbol(userVal);
+
+        q.checked = true;
+        q.correct = isCorrect;
+        q.caseMismatch = isCaseMismatch;
+        if (!isCorrect) allCorrect = false;
+    });
+
+    prefixPowersRenderLevelGrid();
+
+    if (allCorrect) {
+        state.levelsPassed = Math.max(state.levelsPassed, state.currentLevel);
+        prefixPowersShowLevelResult(true);
+    } else {
+        prefixPowersShowLevelResult(false);
+    }
+    prefixPowersUpdateLevelDisplay();
+}
+
+function prefixPowersShowLevelResult(passed) {
+    const state = window.prefixPowersLevelState;
+    const resultBox = document.getElementById('prefixPowersResultBox');
+    const resultHeading = document.getElementById('prefixPowersResultHeading');
+    const resultText = document.getElementById('prefixPowersResultText');
+    const nextBtn = document.getElementById('prefixPowersNextBtn');
+    const inProgressNote = document.getElementById('prefixPowersInProgressNote');
+
+    if (!passed) {
+        if (inProgressNote) {
+            inProgressNote.style.display = 'block';
+            inProgressNote.innerText = 'Not quite - red boxes are wrong. Fix them and press Check again. Remember: symbols are case-sensitive.';
+        }
+        if (resultBox) resultBox.style.display = 'none';
+        return;
+    }
+
+    if (inProgressNote) inProgressNote.style.display = 'none';
+    if (resultBox) resultBox.style.display = 'block';
+
+    const attemptWord = state.attemptsThisLevel === 1 ? 'attempt' : 'attempts';
+    const isFinalLevel = state.currentLevel >= PREFIX_POWERS_MAX_LEVEL;
+
+    if (isFinalLevel) {
+        const alreadyFinished = state.finished;
+        state.finished = true;
+
+        let finalTime;
+        if (alreadyFinished && state.finalTime !== undefined) {
+            finalTime = state.finalTime;
+        } else {
+            if (window.prefixPowersTimerInterval) {
+                clearInterval(window.prefixPowersTimerInterval);
+                window.prefixPowersTimerInterval = null;
+            }
+            finalTime = (Date.now() - state.startTime) / 1000;
+            state.finalTime = finalTime;
+
+            const previousBest = parseFloat(localStorage.getItem(PREFIX_POWERS_BEST_KEY));
+            const isNewBest = isNaN(previousBest) || finalTime < previousBest;
+            if (isNewBest) localStorage.setItem(PREFIX_POWERS_BEST_KEY, finalTime.toFixed(2));
+            prefixPowersShowBestTime();
+            state.wasNewBest = isNewBest;
+            state.previousBestAtFinish = previousBest;
+        }
+
+        const timerDisplay = document.getElementById('prefixPowersTimerDisplay');
+        if (timerDisplay) timerDisplay.innerText = `Time: ${finalTime.toFixed(1)}s`;
+
+        if (resultHeading) resultHeading.innerText = '🏆 All Levels Complete!';
+        if (resultText) {
+            resultText.innerText = state.wasNewBest
+                ? `You finished all ${PREFIX_POWERS_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s - a new best! (Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord})`
+                : `You finished all ${PREFIX_POWERS_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s${state.previousBestAtFinish ? ` (best: ${state.previousBestAtFinish.toFixed(1)}s)` : ''}. Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord}.`;
+        }
+    } else {
+        if (resultHeading) resultHeading.innerText = '🎉 Level Passed!';
+        if (resultText) {
+            resultText.innerText = `Great work - Level ${state.currentLevel} complete in ${state.attemptsThisLevel} ${attemptWord}. Ready for Level ${state.currentLevel + 1}?`;
+        }
+    }
+    if (nextBtn) nextBtn.style.display = isFinalLevel ? 'none' : 'inline-block';
+    const submitBtn = document.getElementById('prefixPowersSubmitBtn');
+    if (submitBtn) submitBtn.disabled = !isFinalLevel;
+}
+
+function prefixPowersUpdateLevelDisplay() {
+    const state = window.prefixPowersLevelState;
+    if (!state) return;
+    const levelEl = document.getElementById('prefixPowersLevelDisplay');
+    if (levelEl) levelEl.innerText = `Level ${state.currentLevel} of ${PREFIX_POWERS_MAX_LEVEL}`;
+    const titleEl = document.getElementById('prefixPowersLevelTitleDisplay');
+    if (titleEl) titleEl.innerText = PREFIX_POWERS_LEVEL_TITLES[state.currentLevel - 1];
+    const scoreEl = document.getElementById('prefixPowersScoreDisplay');
+    if (scoreEl) scoreEl.innerText = `Levels passed: ${state.levelsPassed} / ${PREFIX_POWERS_MAX_LEVEL}`;
+    const attemptsEl = document.getElementById('prefixPowersAttemptsDisplay');
+    if (attemptsEl) attemptsEl.innerText = `Attempts this level: ${state.attemptsThisLevel}  |  Total attempts: ${state.totalAttempts}`;
+}
+
+//*****************************************************************************************
+// REARRANGING EQUATIONS (Module 1: Physics Maths)
+//*****************************************************************************************
+// Pure algebraic rearrangement, drawn from the Pearson IGCSE Physics equation sheet.
+// Each equation is shown in full; the student types the rearranged expression for a
+// named variable (e.g. given "F = m x a", make "a" the subject -> types "F/m"). Answers
+// are checked structurally (see rearrangingCanonicalize) rather than by exact string
+// match, so equivalent forms are accepted: multiplication is commutative ("P*t" ==
+// "t*P"), "pi"/"PI"/"Pi" all mean the same constant, and redundant brackets don't
+// matter. Implied multiplication (e.g. "Pt" for "P*t") is deliberately NOT accepted,
+// since several symbols here are multi-letter (GPE, speed, p1, V2...) and juxtaposition
+// would be genuinely ambiguous to parse. Answers are case-sensitive on purpose (the
+// same letter can mean different things elsewhere - p vs P, W vs w), with a same
+// orange-box treatment as Prefix Powers when a wrong answer is only a case slip.
+//
+// wave speed (lambda), density/fluid pressure (rho), and refractive index/critical
+// angle (trig, not algebra) are excluded - consistent with avoiding hard-to-type
+// symbols elsewhere on this site. Moments has no official single-letter symbol on the
+// Pearson sheet so is left out for now too. "speed" and "efficiency" are spelled out
+// rather than compressed to an invented letter, for the same reason.
+const REARRANGING_LEVEL1 = [
+    { display: 'F = m &times; a', type: 'multiply', rearrangements: [
+        { solveFor: 'm', answer: 'F/a' }, { solveFor: 'a', answer: 'F/m' } ] },
+    { display: 'W = m &times; g', type: 'multiply', rearrangements: [
+        { solveFor: 'm', answer: 'W/g' }, { solveFor: 'g', answer: 'W/m' } ] },
+    { display: 'P = I &times; V', type: 'multiply', rearrangements: [
+        { solveFor: 'I', answer: 'P/V' }, { solveFor: 'V', answer: 'P/I' } ] },
+    { display: 'V = I &times; R', type: 'multiply', rearrangements: [
+        { solveFor: 'I', answer: 'V/R' }, { solveFor: 'R', answer: 'V/I' } ] },
+    { display: 'Q = I &times; t', type: 'multiply', rearrangements: [
+        { solveFor: 'I', answer: 'Q/t' }, { solveFor: 't', answer: 'Q/I' } ] },
+    { display: 'E = Q &times; V', type: 'multiply', rearrangements: [
+        { solveFor: 'Q', answer: 'E/V' }, { solveFor: 'V', answer: 'E/Q' } ] },
+    { display: 'W = F &times; d', type: 'multiply', rearrangements: [
+        { solveFor: 'F', answer: 'W/d' }, { solveFor: 'd', answer: 'W/F' } ] },
+    { display: 'p = m &times; v', type: 'multiply', rearrangements: [
+        { solveFor: 'm', answer: 'p/v' }, { solveFor: 'v', answer: 'p/m' } ] },
+    { display: 'P = W / t', type: 'divide', rearrangements: [
+        { solveFor: 'W', answer: 'P*t' }, { solveFor: 't', answer: 'W/P' } ] },
+    { display: 'P = F / A', type: 'divide', rearrangements: [
+        { solveFor: 'F', answer: 'P*A' }, { solveFor: 'A', answer: 'F/P' } ] },
+    { display: 'speed = d / t', type: 'divide', rearrangements: [
+        { solveFor: 'd', answer: 'speed*t' }, { solveFor: 't', answer: 'd/speed' } ] }
+];
+const REARRANGING_LEVEL2 = [
+    { display: 'E = I &times; V &times; t', rearrangements: [
+        { solveFor: 'I', answer: 'E/(V*t)' }, { solveFor: 'V', answer: 'E/(I*t)' }, { solveFor: 't', answer: 'E/(I*V)' } ] },
+    { display: 'GPE = m &times; g &times; h', rearrangements: [
+        { solveFor: 'm', answer: 'GPE/(g*h)' }, { solveFor: 'g', answer: 'GPE/(m*h)' }, { solveFor: 'h', answer: 'GPE/(m*g)' } ] },
+    { display: 'v = 2&pi;r / T', rearrangements: [
+        { solveFor: 'r', answer: 'v*T/(2*pi)' }, { solveFor: 'T', answer: '2*pi*r/v' } ] },
+    { display: 'KE = &frac12; &times; m &times; v<sup>2</sup>', rearrangements: [
+        { solveFor: 'm', answer: '2*KE/(v^2)' }, { solveFor: 'v^2', solveForDisplay: 'v<sup>2</sup>', answer: '2*KE/m' } ] }
+];
+const REARRANGING_LEVEL3 = [
+    { display: 'p<sub>1</sub>V<sub>1</sub> = p<sub>2</sub>V<sub>2</sub>', rearrangements: [
+        { solveFor: 'p1', answer: 'p2*V2/V1' }, { solveFor: 'V1', answer: 'p2*V2/p1' },
+        { solveFor: 'p2', answer: 'p1*V1/V2' }, { solveFor: 'V2', answer: 'p1*V1/p2' } ] },
+    { display: 'p<sub>1</sub>/T<sub>1</sub> = p<sub>2</sub>/T<sub>2</sub>', rearrangements: [
+        { solveFor: 'p1', answer: 'p2*T1/T2' }, { solveFor: 'T1', answer: 'p1*T2/p2' },
+        { solveFor: 'p2', answer: 'p1*T2/T1' }, { solveFor: 'T2', answer: 'p2*T1/p1' } ] },
+    { display: 'a = (v &minus; u) / t', rearrangements: [
+        { solveFor: 'v', answer: 'a*t+u' }, { solveFor: 'u', answer: 'v-a*t' }, { solveFor: 't', answer: '(v-u)/a' } ] }
+];
+const REARRANGING_LEVELS = [
+    { equations: REARRANGING_LEVEL1, splitByType: { multiply: 6, divide: 6 } },
+    { equations: REARRANGING_LEVEL2, questionCount: 8 },
+    { equations: REARRANGING_LEVEL3, questionCount: 8 }
+];
+const REARRANGING_LEVEL_TITLES = [
+    "Simple rearranging (3 variables)",
+    "Rearranging with more terms (4 variables)",
+    "Harder rearranging (gas laws, plus/minus)"
+];
+const REARRANGING_MAX_LEVEL = REARRANGING_LEVELS.length;
+const REARRANGING_BEST_KEY = "abingdonPhysics_rearrangingBestTime";
+
+// ----- Answer canonicalisation (see the header comment above for the reasoning) -----
+// A small recursive expression canonicaliser, handling the operator precedence our
+// equation set actually needs: +/- (outermost, lowest precedence) > / > * (innermost).
+// Each level is fully recursive, so commutativity holds no matter how deep an
+// equivalent term is nested (e.g. "2*s/(u+v)" and "2*s/(v+u)" canonicalise identically).
+function rearrangingStripOuterParens(s) {
+    while (s.startsWith('(') && s.endsWith(')')) {
+        let depth = 0, matches = true;
+        for (let i = 0; i < s.length - 1; i++) {
+            if (s[i] === '(') depth++;
+            else if (s[i] === ')') depth--;
+            if (depth === 0 && i < s.length - 1) { matches = false; break; }
+        }
+        if (!matches) break;
+        s = s.slice(1, -1);
+    }
+    return s;
+}
+function rearrangingFindTopLevelSlash(s) {
+    let depth = 0;
+    for (let i = 0; i < s.length; i++) {
+        if (s[i] === '(') depth++;
+        else if (s[i] === ')') depth--;
+        else if (s[i] === '/' && depth === 0) return i;
+    }
+    return -1;
+}
+function rearrangingSplitAdditive(s) {
+    const parts = [];
+    let depth = 0, start = 0;
+    for (let i = 0; i < s.length; i++) {
+        const c = s[i];
+        if (c === '(') depth++;
+        else if (c === ')') depth--;
+        else if (depth === 0 && (c === '+' || c === '-') && i > 0) {
+            parts.push(s.slice(start, i));
+            start = i;
+        }
+    }
+    parts.push(s.slice(start));
+    return parts;
+}
+// If an already-canonicalised sub-expression itself has a top-level +/- (i.e. it's a
+// sum or difference, not one multiplicative term), it MUST be wrapped in brackets
+// before being nested inside a division or multiplication - otherwise the grouping is
+// lost when the pieces are reassembled into a single string, and two genuinely
+// different expressions (e.g. "(v-u)/a" and "v-u/a") could wrongly canonicalise to the
+// same result.
+function rearrangingWrapIfNeeded(canonSubExpr) {
+    return rearrangingSplitAdditive(canonSubExpr).length > 1 ? '(' + canonSubExpr + ')' : canonSubExpr;
+}
+function rearrangingCanonicalizeExpr(s) {
+    s = rearrangingStripOuterParens(s);
+    if (!/[+\-*/]/.test(s)) return s; // base case: a single atomic term (variable/number)
+
+    const additiveTerms = rearrangingSplitAdditive(s);
+    if (additiveTerms.length > 1) {
+        const canonTerms = additiveTerms.map(term => {
+            let sign = '+', content = term;
+            if (content.startsWith('+')) content = content.slice(1);
+            else if (content.startsWith('-')) { sign = '-'; content = content.slice(1); }
+            return sign + rearrangingCanonicalizeExpr(content);
+        });
+        canonTerms.sort();
+        return canonTerms.map((t, i) => (i === 0 && t.startsWith('+')) ? t.slice(1) : t).join('');
+    }
+
+    const slashIndex = rearrangingFindTopLevelSlash(s);
+    if (slashIndex !== -1) {
+        const numerator = s.slice(0, slashIndex), denominator = s.slice(slashIndex + 1);
+        return rearrangingWrapIfNeeded(rearrangingCanonicalizeExpr(numerator)) + '/' + rearrangingWrapIfNeeded(rearrangingCanonicalizeExpr(denominator));
+    }
+
+    const terms = s.split('*').map(t => rearrangingWrapIfNeeded(rearrangingCanonicalizeExpr(t.trim()))).filter(t => t.length > 0);
+    terms.sort();
+    return terms.join('*');
+}
+function rearrangingCanonicalize(rawInput) {
+    let s = rawInput.replace(/\s+/g, '').replace(/[×·]/g, '*').replace(/÷/g, '/');
+    s = s.replace(/−/g, '-'); // accept the Unicode minus sign as well as a plain hyphen
+    s = s.replace(/²/g, '^2'); // accept a pasted superscript-2 as well as typed ^2
+    s = s.replace(/pi/gi, 'PI');
+    const sqrtMatch = s.match(/^sqrt\((.+)\)$/i);
+    if (sqrtMatch) return 'sqrt(' + rearrangingCanonicalize(sqrtMatch[1]) + ')';
+    return rearrangingCanonicalizeExpr(s);
+}
+function rearrangingAnswersEqual(a, b) {
+    return rearrangingCanonicalize(a) === rearrangingCanonicalize(b);
+}
+// Loose (case-insensitive) comparison, used only to detect "right structure, wrong
+// capitals" so it can be flagged orange rather than marked flatly wrong. Crucially,
+// this lowercases BEFORE canonicalising, not after - canonicalising sorts terms by
+// their string value, and a case difference can change that sort order (e.g. "V" sorts
+// before "t", but "v" sorts after it), so two answers that are really the same but for
+// capitals could still canonicalise to different term orders if compared the other way.
+function rearrangingAnswersEqualLoose(a, b) {
+    return rearrangingCanonicalize(a.toLowerCase()) === rearrangingCanonicalize(b.toLowerCase());
+}
+
+// Detects a missing multiplication sign (e.g. "Pt" instead of "P*t") safely, without
+// the general ambiguity that ruled out implied multiplication elsewhere (is "GPEh"
+// meant as GPE*h, or G*P*E*h?). The trick: we only ever need to recognise the specific
+// variable names that legitimately appear in THIS question's own expected answer, not
+// parse arbitrary text - so there's a small, known vocabulary to match against rather
+// than guessing. Greedily matches the longest known token first at each position, so a
+// multi-letter symbol like "GPE" is never mistaken for three separate letters.
+function rearrangingExtractTokens(expectedAnswer) {
+    const matches = expectedAnswer.match(/[A-Za-z0-9]+/g) || [];
+    return [...new Set(matches)];
+}
+function rearrangingTokenizeWithKnownVars(str, knownTokens) {
+    const sorted = knownTokens.slice().sort((a, b) => b.length - a.length);
+    let pos = 0;
+    const result = [];
+    while (pos < str.length) {
+        let matched = false;
+        for (const token of sorted) {
+            if (str.startsWith(token, pos)) {
+                result.push(token);
+                pos += token.length;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) return null;
+    }
+    return result;
+}
+// Tries inserting '*' between adjacent known tokens wherever the user's answer has them
+// glued together with no operator. This can produce a structurally wrong "repair" (e.g.
+// if a whole division was missed, not just a multiply sign) - that's fine, because the
+// caller always re-checks the repaired string against the full expected answer before
+// trusting it, so a repair that doesn't actually fix things is simply discarded.
+function rearrangingRepairImpliedMultiplication(rawInput, expectedAnswer) {
+    const tokens = rearrangingExtractTokens(expectedAnswer);
+    if (tokens.length === 0) return null;
+    const cleaned = rawInput.replace(/\s+/g, '');
+    let changed = false;
+    const repaired = cleaned.replace(/[A-Za-z0-9]+/g, (run) => {
+        const matched = rearrangingTokenizeWithKnownVars(run, tokens);
+        if (!matched || matched.length < 2) return run; // nothing to repair in a single token
+        changed = true;
+        return matched.join('*');
+    });
+    return changed ? repaired : null;
+}
+
+function rearrangingBuildLevelQuestions(levelConfig) {
+    if (levelConfig.splitByType) {
+        return rearrangingBuildSplitLevelQuestions(levelConfig);
+    }
+    const allVariants = [];
+    levelConfig.equations.forEach(eq => {
+        eq.rearrangements.forEach(r => {
+            allVariants.push({ display: eq.display, solveFor: r.solveFor, solveForDisplay: r.solveForDisplay || r.solveFor, expected: r.answer });
+        });
+    });
+    const shuffled = allVariants.slice().sort(() => Math.random() - 0.5);
+    const count = Math.min(levelConfig.questionCount, shuffled.length);
+    return shuffled.slice(0, count).map((v, i) => ({ id: i, ...v, checked: false, correct: false, caseMismatch: false }));
+}
+
+// Draws a fixed number of questions from each equation "type" (e.g. 9 multiply-type +
+// 3 divide-type for Level 1), each pool shuffled independently, then shuffles the
+// combined result so the two types don't visually cluster together.
+function rearrangingBuildSplitLevelQuestions(levelConfig) {
+    const variantsByType = {};
+    levelConfig.equations.forEach(eq => {
+        const type = eq.type || 'multiply';
+        if (!variantsByType[type]) variantsByType[type] = [];
+        eq.rearrangements.forEach(r => {
+            variantsByType[type].push({ display: eq.display, solveFor: r.solveFor, solveForDisplay: r.solveForDisplay || r.solveFor, expected: r.answer });
+        });
+    });
+
+    let combined = [];
+    Object.keys(levelConfig.splitByType).forEach(type => {
+        const pool = (variantsByType[type] || []).slice().sort(() => Math.random() - 0.5);
+        const count = Math.min(levelConfig.splitByType[type], pool.length);
+        combined = combined.concat(pool.slice(0, count));
+    });
+    combined = combined.sort(() => Math.random() - 0.5);
+    return combined.map((v, i) => ({ id: i, ...v, checked: false, correct: false, caseMismatch: false }));
+}
+
+function rearrangingStartLevel(levelNum) {
+    const prevState = window.rearrangingLevelState;
+    const levelConfig = REARRANGING_LEVELS[levelNum - 1];
+
+    window.rearrangingLevelState = {
+        currentLevel: levelNum,
+        questions: rearrangingBuildLevelQuestions(levelConfig),
+        levelsPassed: prevState ? prevState.levelsPassed : 0,
+        attemptsThisLevel: 0,
+        totalAttempts: prevState ? prevState.totalAttempts : 0,
+        startTime: prevState ? prevState.startTime : Date.now(),
+        finished: false
+    };
+
+    if (!window.rearrangingTimerInterval) {
+        window.rearrangingTimerInterval = setInterval(rearrangingTick, 100);
+    }
+
+    const resultBox = document.getElementById('rearrangingResultBox');
+    if (resultBox) resultBox.style.display = 'none';
+    const submitBtn = document.getElementById('rearrangingSubmitBtn');
+    if (submitBtn) submitBtn.disabled = true;
+    const inProgressNote = document.getElementById('rearrangingInProgressNote');
+    if (inProgressNote) {
+        inProgressNote.style.display = 'block';
+        inProgressNote.innerHTML = 'Use * for multiply (e.g. m*g), / for divide (e.g. F/m), ^ for powers (e.g. v^2), and type "pi" for the &pi; symbol. <b>Capital letters matter</b> - the Check button unlocks once every box has something in it.';
+    }
+
+    rearrangingRenderLevelGrid();
+    rearrangingUpdateLevelDisplay();
+    rearrangingShowBestTime();
+}
+
+function rearrangingTick() {
+    const state = window.rearrangingLevelState;
+    const timerDisplay = document.getElementById('rearrangingTimerDisplay');
+    if (!timerDisplay || !state || !state.startTime || state.finished) return;
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    timerDisplay.innerText = `Time: ${elapsed.toFixed(1)}s`;
+}
+
+function rearrangingShowBestTime() {
+    const bestDisplay = document.getElementById('rearrangingBestDisplay');
+    if (!bestDisplay) return;
+    const best = localStorage.getItem(REARRANGING_BEST_KEY);
+    bestDisplay.innerText = best ? `Best: ${parseFloat(best).toFixed(1)}s` : "Best: --";
+}
+
+function rearrangingInit() {
+    if (window.rearrangingLevelState) {
+        if (!window.rearrangingTimerInterval && !window.rearrangingLevelState.finished) {
+            window.rearrangingTimerInterval = setInterval(rearrangingTick, 100);
+        }
+        rearrangingRenderLevelGrid();
+        rearrangingUpdateLevelDisplay();
+        rearrangingShowBestTime();
+        if (window.rearrangingLevelState.finished) {
+            rearrangingShowLevelResult(true);
+        } else {
+            const resultBox = document.getElementById('rearrangingResultBox');
+            if (resultBox) resultBox.style.display = 'none';
+            const inProgressNote = document.getElementById('rearrangingInProgressNote');
+            if (inProgressNote) {
+                inProgressNote.style.display = 'block';
+                inProgressNote.innerHTML = 'Use * for multiply (e.g. m*g), / for divide (e.g. F/m), ^ for powers (e.g. v^2), and type "pi" for the &pi; symbol. <b>Capital letters matter</b> - the Check button unlocks once every box has something in it.';
+            }
+        }
+    } else {
+        rearrangingStartLevel(1);
+    }
+}
+
+function rearrangingRestart() {
+    if (window.rearrangingTimerInterval) {
+        clearInterval(window.rearrangingTimerInterval);
+        window.rearrangingTimerInterval = null;
+    }
+    window.rearrangingLevelState = null;
+    rearrangingStartLevel(1);
+}
+
+function rearrangingNextLevel() {
+    const state = window.rearrangingLevelState;
+    if (!state) return;
+    if (state.currentLevel >= REARRANGING_MAX_LEVEL) return;
+    rearrangingStartLevel(state.currentLevel + 1);
+}
+
+function rearrangingRenderLevelGrid() {
+    const grid = document.getElementById('rearrangingLevelGrid');
+    const state = window.rearrangingLevelState;
+    if (!grid || !state) return;
+
+    grid.innerHTML = '';
+    grid.style.gap = '0';
+    state.questions.forEach(q => {
+        const cell = document.createElement('div');
+        cell.className = 'rearranging-row';
+        if (q.checked) cell.classList.add(q.correct ? 'sf-correct' : ((q.caseMismatch || q.missingMultiply) ? 'sf-case-warning' : 'sf-incorrect'));
+
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.flexWrap = 'wrap';
+        row.style.gap = '6px';
+        row.style.fontWeight = 'bold';
+
+        const eqSpan = document.createElement('span');
+        eqSpan.innerHTML = q.display;
+        row.appendChild(eqSpan);
+
+        const instructionSpan = document.createElement('span');
+        instructionSpan.style.fontWeight = 'normal';
+        instructionSpan.style.color = '#666';
+        instructionSpan.innerHTML = ` &rarr; make <b>${q.solveForDisplay}</b> the subject: ${q.solveForDisplay} =`;
+        row.appendChild(instructionSpan);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'sf-answer-input sf-ordinary-input';
+        input.autocomplete = 'off';
+        input.dataset.qid = q.id;
+        input.style.width = '110px';
+        if (q.checked && q.correct) {
+            input.value = q.expected;
+            input.disabled = true;
+        } else if (q.userAnswer !== undefined) {
+            input.value = q.userAnswer;
+        }
+        input.oninput = () => { q.userAnswer = input.value; rearrangingUpdateCheckButtonState(); };
+        row.appendChild(input);
+
+        if (q.checked) {
+            const icon = document.createElement('span');
+            icon.className = 'sf-feedback-icon';
+            if (q.correct) {
+                icon.innerText = '✅'; icon.style.color = '#28a745';
+            } else if (q.caseMismatch || q.missingMultiply) {
+                icon.innerText = '⚠️'; icon.style.color = '#fd7e14';
+            } else {
+                icon.innerText = '❌'; icon.style.color = '#dc3545';
+            }
+            row.appendChild(icon);
+        }
+
+        cell.appendChild(row);
+
+        if (q.checked && q.caseMismatch) {
+            const hint = document.createElement('div');
+            hint.style.fontWeight = 'normal';
+            hint.style.fontSize = '0.85em';
+            hint.style.color = '#a15c00';
+            hint.style.marginTop = '4px';
+            hint.innerText = 'Right structure, wrong capitals - check which letters should be capital.';
+            cell.appendChild(hint);
+        } else if (q.checked && q.missingMultiply) {
+            const hint = document.createElement('div');
+            hint.style.fontWeight = 'normal';
+            hint.style.fontSize = '0.85em';
+            hint.style.color = '#a15c00';
+            hint.style.marginTop = '4px';
+            hint.innerText = "Right answer, but you're missing a multiplication sign (*) between terms.";
+            cell.appendChild(hint);
+        }
+
+        grid.appendChild(cell);
+    });
+
+    rearrangingUpdateCheckButtonState();
+}
+
+function rearrangingUpdateCheckButtonState() {
+    const inputs = document.querySelectorAll('#rearrangingLevelGrid .sf-answer-input:not(:disabled)');
+    const allFilled = inputs.length > 0 && Array.from(inputs).every(inp => inp.value.trim() !== '');
+    const checkBtn = document.getElementById('rearrangingCheckBtn');
+    if (checkBtn) checkBtn.disabled = !allFilled;
+}
+
+function rearrangingCheckLevel() {
+    const state = window.rearrangingLevelState;
+    if (!state) return;
+
+    state.attemptsThisLevel++;
+    state.totalAttempts++;
+
+    let allCorrect = true;
+    state.questions.forEach(q => {
+        if (q.checked && q.correct) return;
+
+        const userVal = (q.userAnswer || '').trim();
+        const isCorrect = rearrangingAnswersEqual(userVal, q.expected);
+        let isCaseMismatch = false;
+        let isMissingMultiply = false;
+
+        if (!isCorrect) {
+            isCaseMismatch = rearrangingAnswersEqualLoose(userVal, q.expected);
+            if (!isCaseMismatch) {
+                const repaired = rearrangingRepairImpliedMultiplication(userVal, q.expected);
+                if (repaired !== null) {
+                    isMissingMultiply = rearrangingAnswersEqual(repaired, q.expected)
+                        || rearrangingAnswersEqualLoose(repaired, q.expected);
+                }
+            }
+        }
+
+        q.checked = true;
+        q.correct = isCorrect;
+        q.caseMismatch = isCaseMismatch;
+        q.missingMultiply = isMissingMultiply;
+        if (!isCorrect) allCorrect = false;
+    });
+
+    rearrangingRenderLevelGrid();
+
+    if (allCorrect) {
+        state.levelsPassed = Math.max(state.levelsPassed, state.currentLevel);
+        rearrangingShowLevelResult(true);
+    } else {
+        rearrangingShowLevelResult(false);
+    }
+    rearrangingUpdateLevelDisplay();
+}
+
+function rearrangingShowLevelResult(passed) {
+    const state = window.rearrangingLevelState;
+    const resultBox = document.getElementById('rearrangingResultBox');
+    const resultHeading = document.getElementById('rearrangingResultHeading');
+    const resultText = document.getElementById('rearrangingResultText');
+    const nextBtn = document.getElementById('rearrangingNextBtn');
+    const inProgressNote = document.getElementById('rearrangingInProgressNote');
+
+    if (!passed) {
+        if (inProgressNote) {
+            inProgressNote.style.display = 'block';
+            inProgressNote.innerText = 'Not quite - red boxes are wrong, orange boxes are right but wrongly capitalised. Fix them and press Check again.';
+        }
+        if (resultBox) resultBox.style.display = 'none';
+        return;
+    }
+
+    if (inProgressNote) inProgressNote.style.display = 'none';
+    if (resultBox) resultBox.style.display = 'block';
+
+    const attemptWord = state.attemptsThisLevel === 1 ? 'attempt' : 'attempts';
+    const isFinalLevel = state.currentLevel >= REARRANGING_MAX_LEVEL;
+
+    if (isFinalLevel) {
+        const alreadyFinished = state.finished;
+        state.finished = true;
+
+        let finalTime;
+        if (alreadyFinished && state.finalTime !== undefined) {
+            finalTime = state.finalTime;
+        } else {
+            if (window.rearrangingTimerInterval) {
+                clearInterval(window.rearrangingTimerInterval);
+                window.rearrangingTimerInterval = null;
+            }
+            finalTime = (Date.now() - state.startTime) / 1000;
+            state.finalTime = finalTime;
+
+            const previousBest = parseFloat(localStorage.getItem(REARRANGING_BEST_KEY));
+            const isNewBest = isNaN(previousBest) || finalTime < previousBest;
+            if (isNewBest) localStorage.setItem(REARRANGING_BEST_KEY, finalTime.toFixed(2));
+            rearrangingShowBestTime();
+            state.wasNewBest = isNewBest;
+            state.previousBestAtFinish = previousBest;
+        }
+
+        const timerDisplay = document.getElementById('rearrangingTimerDisplay');
+        if (timerDisplay) timerDisplay.innerText = `Time: ${finalTime.toFixed(1)}s`;
+
+        if (resultHeading) resultHeading.innerText = '🏆 All Levels Complete!';
+        if (resultText) {
+            resultText.innerText = state.wasNewBest
+                ? `You finished all ${REARRANGING_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s - a new best! (Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord})`
+                : `You finished all ${REARRANGING_MAX_LEVEL} levels in ${finalTime.toFixed(1)}s${state.previousBestAtFinish ? ` (best: ${state.previousBestAtFinish.toFixed(1)}s)` : ''}. Level ${state.currentLevel}: ${state.attemptsThisLevel} ${attemptWord}.`;
+        }
+    } else {
+        if (resultHeading) resultHeading.innerText = '🎉 Level Passed!';
+        if (resultText) {
+            resultText.innerText = `Great work - Level ${state.currentLevel} complete in ${state.attemptsThisLevel} ${attemptWord}. Ready for Level ${state.currentLevel + 1}?`;
+        }
+    }
+    if (nextBtn) nextBtn.style.display = isFinalLevel ? 'none' : 'inline-block';
+    const submitBtn = document.getElementById('rearrangingSubmitBtn');
+    if (submitBtn) submitBtn.disabled = !isFinalLevel;
+}
+
+function rearrangingUpdateLevelDisplay() {
+    const state = window.rearrangingLevelState;
+    if (!state) return;
+    const levelEl = document.getElementById('rearrangingLevelDisplay');
+    if (levelEl) levelEl.innerText = `Level ${state.currentLevel} of ${REARRANGING_MAX_LEVEL}`;
+    const titleEl = document.getElementById('rearrangingLevelTitleDisplay');
+    if (titleEl) titleEl.innerText = REARRANGING_LEVEL_TITLES[state.currentLevel - 1];
+    const scoreEl = document.getElementById('rearrangingScoreDisplay');
+    if (scoreEl) scoreEl.innerText = `Levels passed: ${state.levelsPassed} / ${REARRANGING_MAX_LEVEL}`;
+    const attemptsEl = document.getElementById('rearrangingAttemptsDisplay');
+    if (attemptsEl) attemptsEl.innerText = `Attempts this level: ${state.attemptsThisLevel}  |  Total attempts: ${state.totalAttempts}`;
+}
+
 
 //*****************************************************************************************
 // FLIP-FLOP WAVEFORM COMPLETION (Module 5: Flip Flops & Counters)
